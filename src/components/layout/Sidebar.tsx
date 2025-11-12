@@ -27,19 +27,28 @@ interface SidebarProps {
   open: boolean;
   onClose: () => void;
   isMobile: boolean;
+  onNavigate?: (path: string) => void;
+  currentPath?: string;
 }
 
-export function Sidebar({ open, onClose, isMobile }: SidebarProps) {
+export function Sidebar({ open, onClose, isMobile, onNavigate, currentPath: propCurrentPath }: SidebarProps) {
   const [activeSection, setActiveSection] = React.useState<string>('primary');
-  const [currentPath, setCurrentPath] = React.useState('/');
+  const [internalPath, setInternalPath] = React.useState('/');
   const { profile } = useAuth();
+  
+  // Use prop path if provided, otherwise use internal state
+  const currentPath = propCurrentPath || internalPath;
   
   // Use profile from auth or fallback to demo user
   const user = profile || {
     name: 'Pastor John',
-    email: 'pastor@church.com',
+    email: 'admin@oliveBrookchurch.org',
     role: 'pastor',
-    church_name: 'ChurchAfrica Lagos',
+    church_name: 'The OliveBrook Church, Abuja',
+    church_type: 'Kubwa Campus',
+    church_address: 'Kubwa, Abuja, Nigeria',
+    church_phone: '+234 800 OLIVE 00',
+    church_email: 'info@olivebrookchurch.org',
     avatar_url: '',
   };
 
@@ -48,7 +57,10 @@ export function Sidebar({ open, onClose, isMobile }: SidebarProps) {
   const visibleSecondaryNav = filterNavigationByRole(secondaryNavigation, user.role);
 
   const handleNavClick = (item: NavigationItem) => {
-    setCurrentPath(item.href);
+    setInternalPath(item.href);
+    if (onNavigate) {
+      onNavigate(item.href);
+    }
     if (isMobile) {
       onClose();
     }
@@ -91,23 +103,15 @@ export function Sidebar({ open, onClose, isMobile }: SidebarProps) {
 
   // Desktop: render as fixed sidebar
   return (
-    <aside
-      className={`
-        w-[280px] bg-card border-r border-border flex-shrink-0
-        transform transition-all duration-300 ease-in-out
-        ${open ? 'translate-x-0' : '-translate-x-full'}
-      `}
-    >
-      <SidebarContent
-        user={user}
-        currentPath={currentPath}
-        visiblePrimaryNav={visiblePrimaryNav}
-        visibleSecondaryNav={visibleSecondaryNav}
-        utilityNav={utilityNavigation}
-        onNavClick={handleNavClick}
-        isMobile={isMobile}
-      />
-    </aside>
+    <SidebarContent
+      user={user}
+      currentPath={currentPath}
+      visiblePrimaryNav={visiblePrimaryNav}
+      visibleSecondaryNav={visibleSecondaryNav}
+      utilityNav={utilityNavigation}
+      onNavClick={handleNavClick}
+      isMobile={isMobile}
+    />
   );
 }
 
@@ -142,8 +146,8 @@ function SidebarContent({
               <Church className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm">ChurchAfrica</h3>
-              <p className="text-xs text-muted-foreground">{user.church_name || 'ChurchAfrica Lagos'}</p>
+              <h3 className="font-semibold text-sm">{user.church_name || 'Victory Chapel Ministry'}</h3>
+              <p className="text-xs text-muted-foreground">{user.church_type || 'Independent'}</p>
             </div>
           </div>
           {isMobile && onClose && (

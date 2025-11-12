@@ -23,7 +23,12 @@ import {
   SubtlePattern,
   PatternContainer,
   PriceDisplay,
-  StatCard
+  StatCard,
+  SquareDotNav,
+  SquareDotProgress,
+  SquareDotRating,
+  PasswordStrengthMeter,
+  PasswordStrengthBadge
 } from './index';
 import { 
   Heart, 
@@ -42,6 +47,10 @@ export function UIShowcase() {
   const [isChecked, setIsChecked] = React.useState(false);
   const [phoneValue, setPhoneValue] = React.useState('');
   const [countryCode, setCountryCode] = React.useState('+234');
+  const [currentDot, setCurrentDot] = React.useState(0);
+  const [currentStep, setCurrentStep] = React.useState(1);
+  const [rating, setRating] = React.useState(3);
+  const [password, setPassword] = React.useState('Password123!');
 
   return (
     <div className="min-h-screen bg-background">
@@ -365,6 +374,139 @@ export function UIShowcase() {
               setShowPWAPrompt(false);
             }}
           />
+        </section>
+
+        {/* Square Dot Navigation */}
+        <section>
+          <h2 className="text-2xl font-bold text-foreground mb-6">Square Dot Navigation</h2>
+          <div className="space-y-8">
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">Pagination Dots - Primary</p>
+              <SquareDotNav
+                total={5}
+                current={currentDot}
+                onDotClick={setCurrentDot}
+                size="md"
+                variant="primary"
+              />
+            </div>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">Large Dots - Secondary</p>
+              <SquareDotNav
+                total={7}
+                current={2}
+                size="lg"
+                variant="secondary"
+              />
+            </div>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">Small Dots - Muted</p>
+              <SquareDotNav
+                total={10}
+                current={5}
+                size="sm"
+                variant="muted"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Square Dot Progress */}
+        <section>
+          <h2 className="text-2xl font-bold text-foreground mb-6">Square Dot Progress Stepper</h2>
+          <div className="space-y-8 max-w-2xl">
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">Onboarding Steps</p>
+              <SquareDotProgress
+                steps={['Account', 'Profile', 'Church', 'Members', 'Complete']}
+                currentStep={currentStep}
+                showLabels={true}
+                variant="primary"
+              />
+              <div className="flex gap-2 mt-4">
+                <AnimatedButton 
+                  size="sm" 
+                  onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+                  disabled={currentStep === 0}
+                >
+                  Previous
+                </AnimatedButton>
+                <AnimatedButton 
+                  size="sm" 
+                  onClick={() => setCurrentStep(Math.min(4, currentStep + 1))}
+                  disabled={currentStep === 4}
+                >
+                  Next
+                </AnimatedButton>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">Event Setup</p>
+              <SquareDotProgress
+                steps={['Details', 'Schedule', 'Registration', 'Publish']}
+                currentStep={2}
+                showLabels={false}
+                variant="secondary"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Square Dot Rating */}
+        <section>
+          <h2 className="text-2xl font-bold text-foreground mb-6">Square Dot Rating</h2>
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">Rate Your Experience</p>
+              <SquareDotRating
+                maxRating={5}
+                rating={rating}
+                onRatingChange={setRating}
+                size="lg"
+              />
+              <p className="text-xs text-muted-foreground">Rating: {rating} / 5</p>
+            </div>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">Service Quality (Read Only)</p>
+              <SquareDotRating
+                maxRating={5}
+                rating={4}
+                size="md"
+                readonly
+              />
+            </div>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">Small Rating</p>
+              <SquareDotRating
+                maxRating={5}
+                rating={3}
+                onRatingChange={() => {}}
+                size="sm"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Password Strength Meter */}
+        <section>
+          <h2 className="text-2xl font-bold text-foreground mb-6">Password Strength Meter</h2>
+          <div className="space-y-6 max-w-md">
+            <div className="space-y-2">
+              <label className="text-sm text-muted-foreground">Try typing a password</label>
+              <input
+                type="text"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password..."
+                className="w-full px-4 py-2 bg-[#0A0A0F] border border-[#2A2A30] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <PasswordStrengthMeter password={password} />
+            <div className="pt-4 border-t border-[#2A2A30]">
+              <p className="text-sm text-muted-foreground mb-2">Compact badge version:</p>
+              <PasswordStrengthBadge password={password} />
+            </div>
+          </div>
         </section>
 
         {/* Footer */}

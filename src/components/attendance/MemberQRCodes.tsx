@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
-import { Dialog, DialogContent } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { ScrollArea } from '../ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
@@ -153,7 +153,13 @@ export function MemberQRCodes({
 
       {/* Member QR Code Detail Dialog */}
       <Dialog open={!!selectedMember} onOpenChange={() => setSelectedMember(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby="member-qr-description">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Member QR Code</DialogTitle>
+            <DialogDescription id="member-qr-description">
+              QR code for member check-in
+            </DialogDescription>
+          </DialogHeader>
           {selectedMember && (
             <QRCodeGenerator
               member={selectedMember}

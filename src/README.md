@@ -28,16 +28,24 @@ Built specifically for African church contexts with:
 
 #### 1. **Authentication & Authorization** 🔐
 - Email/password authentication
+- **Google OAuth Sign-In** 🆕 - One-click authentication with Google
 - Role-based access control (Admin, Pastor, Member)
 - Demo mode for testing
 - Supabase Auth integration ready
 
 #### 2. **Dashboard** 📊
 - Real-time KPI cards (members, attendance, giving, events)
+- **Drag & Drop Customization** 🆕 - Reorder cards with drag-and-drop
+- **Flexible Layouts** 🆕 - Choose 2-4 cards per row, 1-2 rows
+- **Display Density** 🆕 - Compact/Standard/Comfortable modes
+- **20+ KPI Metrics** 🆕 - Choose from membership, attendance, giving, engagement, events
+- **AI-Powered Suggestions** 🆕 - One-click auto-populate with recommended cards
+- **Interactive Tour** 🆕 - Guided onboarding for new users
 - Interactive charts (attendance trends, giving patterns)
 - Activity feed with recent updates
 - Quick actions for common tasks
 - Upcoming events overview
+- Persistent configuration (saved to localStorage)
 
 #### 3. **Member Management** 👥
 - Complete member profiles (name, contact, photo, status)
@@ -47,12 +55,16 @@ Built specifically for African church contexts with:
 - Custom fields support
 
 #### 4. **Attendance Tracking** ✅
-- QR code-based check-in system
+- **Single Service QR Code** 🆕 - One QR per service (not per member)
+- **Mobile Check-in** 🆕 - Members scan with their app, auto-identified
+- **Smart Feedback** 🆕 - Different confirmation for platform vs printed QR
+- **Offline Queue** 🆕 - Check-ins work offline, sync when connected
+- Real-time attendance monitoring with live feed
 - Multiple services support (Sunday, Midweek, Youth, etc.)
-- Real-time attendance statistics
-- Individual QR codes for each member
+- QR code projection, printing, and sharing options
 - Attendance history and analytics
 - First-timer tracking
+- Admin dashboard with real-time updates
 
 #### 5. **Event Management** 📅
 - Full calendar view with event cards

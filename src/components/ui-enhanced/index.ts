@@ -15,3 +15,6 @@ export { CTACard, FeatureCard } from './CTACard';
 export { PWAInstallPrompt } from './PWAInstallPrompt';
 export { SubtlePattern, PatternContainer } from './SubtlePattern';
 export { PriceDisplay, StatCard } from './PriceDisplay';
+export { SquareDotNav, SquareDotProgress, SquareDotRating } from './SquareDotNav';
+export { PasswordStrengthMeter, PasswordStrengthBadge, calculatePasswordStrength } from './PasswordStrengthMeter';
+export type { PasswordStrength } from './PasswordStrengthMeter';

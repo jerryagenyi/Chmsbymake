@@ -56,46 +56,76 @@ export function GivingChart({
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={height}>
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <defs>
+              {/* Gradients for bars */}
+              <linearGradient id="tithesGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.9}/>
+                <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.7}/>
+              </linearGradient>
+              <linearGradient id="offeringsGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#4ade80" stopOpacity={0.9}/>
+                <stop offset="100%" stopColor="#4ade80" stopOpacity={0.7}/>
+              </linearGradient>
+              <linearGradient id="specialGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="hsl(var(--accent))" stopOpacity={0.9}/>
+                <stop offset="100%" stopColor="hsl(var(--accent))" stopOpacity={0.7}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              stroke="hsl(var(--border))" 
+              strokeOpacity={0.3}
+              vertical={false}
+            />
             <XAxis 
               dataKey="month" 
               stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
+              dy={10}
             />
             <YAxis 
               stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
+              fontSize={11}
               tickFormatter={formatCurrency}
+              tickLine={false}
+              axisLine={false}
+              dx={-10}
             />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'hsl(var(--card))',
                 border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
+                fontSize: '12px',
               }}
-              labelStyle={{ color: 'hsl(var(--foreground))' }}
+              labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 500 }}
               formatter={(value: number) => formatCurrency(value)}
             />
-            <Legend />
+            <Legend 
+              wrapperStyle={{ fontSize: '12px' }}
+              iconType="circle"
+            />
             <Bar 
               dataKey="tithes" 
               stackId="a" 
-              fill="hsl(var(--primary))" 
+              fill="url(#tithesGradient)"
               name="Tithes"
               radius={[0, 0, 0, 0]}
             />
             <Bar 
               dataKey="offerings" 
               stackId="a" 
-              fill="hsl(var(--success))" 
+              fill="url(#offeringsGradient)"
               name="Offerings"
               radius={[0, 0, 0, 0]}
             />
             <Bar 
               dataKey="special" 
               stackId="a" 
-              fill="hsl(var(--accent))" 
+              fill="url(#specialGradient)"
               name="Special Giving"
               radius={[4, 4, 0, 0]}
             />

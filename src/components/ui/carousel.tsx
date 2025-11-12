@@ -231,6 +231,49 @@ function CarouselNext({
   );
 }
 
+function CarouselIndicators({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  const { api } = useCarousel();
+  const [current, setCurrent] = React.useState(0);
+  const [count, setCount] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!api) return;
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
+  return (
+    <div
+      className={cn("flex items-center justify-center gap-2 py-2", className)}
+      data-slot="carousel-indicators"
+      {...props}
+    >
+      {Array.from({ length: count }).map((_, index) => (
+        <button
+          key={index}
+          type="button"
+          onClick={() => api?.scrollTo(index)}
+          className={cn(
+            "h-2 w-2 rounded-sm transition-all",
+            index === current
+              ? "bg-primary w-6"
+              : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+          )}
+          aria-label={`Go to slide ${index + 1}`}
+        />
+      ))}
+    </div>
+  );
+}
+
 export {
   type CarouselApi,
   Carousel,
@@ -238,4 +281,5 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselIndicators,
 };

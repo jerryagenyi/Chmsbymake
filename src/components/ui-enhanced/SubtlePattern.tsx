@@ -21,7 +21,7 @@ export function SubtlePattern({
       <div 
         className={`absolute inset-0 ${className}`}
         style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, rgba(28, 228, 121, ${opacity}) 1px, transparent 0)`,
+          backgroundImage: `radial-gradient(circle at 2px 2px, rgba(0, 98, 57, ${opacity}) 1px, transparent 0)`,
           backgroundSize: '32px 32px',
           opacity
         }}
@@ -32,8 +32,8 @@ export function SubtlePattern({
         className={`absolute inset-0 ${className}`}
         style={{
           backgroundImage: `
-            linear-gradient(rgba(28, 228, 121, ${opacity}) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(28, 228, 121, ${opacity}) 1px, transparent 1px)
+            linear-gradient(rgba(0, 98, 57, ${opacity}) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 98, 57, ${opacity}) 1px, transparent 1px)
           `,
           backgroundSize: '32px 32px',
           opacity
@@ -48,8 +48,8 @@ export function SubtlePattern({
             45deg,
             transparent,
             transparent 20px,
-            rgba(28, 228, 121, ${opacity}) 20px,
-            rgba(28, 228, 121, ${opacity}) 21px
+            rgba(0, 98, 57, ${opacity}) 20px,
+            rgba(0, 98, 57, ${opacity}) 21px
           )`,
           opacity
         }}
@@ -61,7 +61,7 @@ export function SubtlePattern({
           <pattern id="wave-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
             <path 
               d="M0 50 Q 25 25, 50 50 T 100 50" 
-              stroke="rgba(28, 228, 121, 0.3)" 
+              stroke="rgba(0, 98, 57, 0.3)" 
               fill="none" 
               strokeWidth="1"
             />
@@ -74,7 +74,7 @@ export function SubtlePattern({
       <div 
         className={`absolute inset-0 ${className}`}
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='50' height='43.4' viewBox='0 0 50 43.4' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M25 0l12.5 7.2v14.5L25 28.9 12.5 21.7V7.2L25 0z' fill='none' stroke='rgba(28, 228, 121, ${opacity})' stroke-width='1'/%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='50' height='43.4' viewBox='0 0 50 43.4' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M25 0l12.5 7.2v14.5L25 28.9 12.5 21.7V7.2L25 0z' fill='none' stroke='rgba(0, 98, 57, ${opacity})' stroke-width='1'/%3E%3C/svg%3E")`,
           backgroundSize: '50px 43.4px',
           opacity
         }}

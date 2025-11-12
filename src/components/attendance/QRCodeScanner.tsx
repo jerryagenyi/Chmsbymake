@@ -31,7 +31,7 @@ interface QRCodeScannerProps {
 }
 
 interface ScanResult {
-  type: 'success' | 'error';
+  type: 'success' | 'error' | 'info';
   message: string;
   data?: any;
 }
@@ -53,33 +53,21 @@ export function QRCodeScanner({
   const scanIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  // Start camera
+  // Start camera (UI/UX only - not actually starting camera for prototype)
   const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: facingMode,
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-      });
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-        streamRef.current = stream;
-        setScanning(true);
-        setHasCamera(true);
-        startScanning();
-      }
-    } catch (error) {
-      console.error('Camera access error:', error);
-      setHasCamera(false);
+    // UI/UX PROTOTYPE: In production, this would call:
+    // const stream = await navigator.mediaDevices.getUserMedia({ video: {...} })
+    // For now, we just simulate the UI state
+    setScanning(true);
+    setHasCamera(true);
+    
+    // Simulate scanning UI feedback
+    setTimeout(() => {
       setScanResult({
-        type: 'error',
-        message: 'Camera access denied. Please enable camera permissions or upload a QR code image.',
+        type: 'info',
+        message: 'UI/UX Prototype: Camera scanning simulated. In production, this would scan real QR codes.',
       });
-    }
+    }, 1000);
   };
 
   // Stop camera

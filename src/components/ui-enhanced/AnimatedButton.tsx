@@ -24,10 +24,10 @@ export function AnimatedButton({
   const baseClasses = 'relative overflow-hidden transition-all duration-300 font-medium touch-target flex items-center justify-center gap-2';
   
   const variantClasses = {
-    primary: 'bg-[#1CE479] text-[#0A0A0F] hover:bg-[#17C969] hover:shadow-[0_0_20px_rgba(28,228,121,0.3)] hover:scale-105 active:scale-95',
+    primary: 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-[0_0_20px_hsl(var(--primary)/0.3)] hover:scale-105 active:scale-95',
     secondary: 'bg-[#2A2A35] text-white hover:bg-[#3A3A45] hover:shadow-lg',
-    outline: 'border-2 border-[#1CE479] text-[#1CE479] hover:bg-[#1CE479] hover:text-[#0A0A0F] hover:shadow-[0_0_20px_rgba(28,228,121,0.2)]',
-    ghost: 'text-[#1CE479] hover:bg-[#1CE479]/10 hover:shadow-[0_0_15px_rgba(28,228,121,0.15)]'
+    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground hover:shadow-[0_0_20px_hsl(var(--primary)/0.2)]',
+    ghost: 'text-primary hover:bg-primary/10 hover:shadow-[0_0_15px_hsl(var(--primary)/0.15)]'
   };
 
   const sizeClasses = {

@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Menu, Search, Bell, MessageSquare, Church } from 'lucide-react';
+import { Menu, Search, Bell, MessageSquare, Church, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
@@ -134,16 +134,19 @@ export function Header({ onToggleSidebar, onToggleSecondarySidebar }: HeaderProp
                   title="New Member Joined"
                   description="Sarah Williams joined the congregation"
                   time="5 minutes ago"
+                  onClear={() => console.log('Clear notification 1')}
                 />
                 <NotificationItem
                   title="Event Reminder"
                   description="Youth Service starts in 1 hour"
                   time="45 minutes ago"
+                  onClear={() => console.log('Clear notification 2')}
                 />
                 <NotificationItem
                   title="Prayer Request"
                   description="John Smith requested prayer for healing"
                   time="2 hours ago"
+                  onClear={() => console.log('Clear notification 3')}
                 />
               </div>
             </DropdownMenuContent>
@@ -235,14 +238,33 @@ interface NotificationItemProps {
   title: string;
   description: string;
   time: string;
+  onClear?: () => void;
 }
 
-function NotificationItem({ title, description, time }: NotificationItemProps) {
+function NotificationItem({ title, description, time, onClear }: NotificationItemProps) {
   return (
-    <div className="p-3 hover:bg-accent/50 cursor-pointer border-b border-border last:border-0 touch-target">
-      <p className="text-sm font-medium">{title}</p>
-      <p className="text-xs text-muted-foreground">{description}</p>
-      <p className="text-xs text-muted-foreground mt-1">{time}</p>
+    <div className="p-3 hover:bg-accent/50 cursor-pointer border-b border-border last:border-0 touch-target group">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium">{title}</p>
+          <p className="text-xs text-muted-foreground">{description}</p>
+          <p className="text-xs text-muted-foreground mt-1">{time}</p>
+        </div>
+        {onClear && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClear();
+            }}
+            className="h-6 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-muted-foreground hover:text-red-500"
+          >
+            <X className="h-3 w-3 mr-1" />
+            Clear
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

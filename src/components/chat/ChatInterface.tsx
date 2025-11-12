@@ -79,10 +79,10 @@ export function ChatInterface() {
     if (!presence) return 'bg-gray-400';
     
     switch (presence.status) {
-      case 'online': return 'bg-green-500';
+      case 'online': return 'bg-success';
       case 'away': return 'bg-yellow-500';
       case 'busy': return 'bg-red-500';
-      default: return 'bg-gray-400';
+      default: return 'bg-gray-500';
     }
   };
 

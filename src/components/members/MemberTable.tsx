@@ -125,6 +125,13 @@ export function MemberTable({
     alumni: 'bg-accent/10 text-accent border-accent/20',
   };
 
+  // Get the checked state for the header checkbox
+  const getHeaderCheckedState = () => {
+    if (allSelected) return true;
+    if (someSelected) return 'indeterminate' as const;
+    return false;
+  };
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -133,8 +140,7 @@ export function MemberTable({
             {onSelectionChange && (
               <TableHead className="w-12">
                 <Checkbox
-                  checked={allSelected}
-                  indeterminate={someSelected}
+                  checked={getHeaderCheckedState()}
                   onCheckedChange={toggleAll}
                 />
               </TableHead>

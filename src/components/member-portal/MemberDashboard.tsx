@@ -147,7 +147,7 @@ export const MemberDashboard: React.FC<MemberDashboardProps> = ({
                     <Badge variant="outline" className="capitalize">
                       {member.status}
                     </Badge>
-                    {member.groups.includes('leaders') && (
+                    {member.groups?.some(g => g.name.toLowerCase() === 'leaders') && (
                       <Badge variant="outline" className="bg-purple-500/10 text-purple-400">
                         <Award className="w-3 h-3 mr-1" />
                         Leader
@@ -263,7 +263,7 @@ export const MemberDashboard: React.FC<MemberDashboardProps> = ({
               <div className="space-y-1">
                 {member.groups.slice(0, 3).map((group, idx) => (
                   <div key={idx} className="text-sm text-gray-400 capitalize">
-                    • {group.replace('-', ' ')}
+                    • {group.name.replace('-', ' ')}
                   </div>
                 ))}
                 {member.groups.length > 3 && (

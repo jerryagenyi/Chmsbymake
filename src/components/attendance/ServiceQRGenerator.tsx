@@ -603,11 +603,14 @@ export const ServiceQRGenerator: React.FC<ServiceQRGeneratorProps> = ({
 
       {/* Projection Modal */}
       <Dialog open={showProjection} onOpenChange={setShowProjection}>
-        <DialogContent className="max-w-4xl bg-[#1A1A20] border-[#2A2A30]">
+        <DialogContent className="max-w-4xl bg-[#1A1A20] border-[#2A2A30]" aria-describedby="projection-description">
           <DialogHeader>
             <DialogTitle className="text-white text-center text-3xl">
               {serviceName}
             </DialogTitle>
+            <p id="projection-description" className="sr-only">
+              QR code projection for {serviceName}
+            </p>
           </DialogHeader>
 
           <div className="space-y-6">

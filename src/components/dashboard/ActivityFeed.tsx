@@ -136,7 +136,7 @@ export function ActivityFeed({
   onSeeAll,
 }: ActivityFeedProps) {
   return (
-    <Card>
+    <Card className="h-full flex flex-col">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -155,7 +155,7 @@ export function ActivityFeed({
           )}
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1 overflow-hidden">
         <ScrollArea className={cn("pr-4")} style={{ maxHeight }}>
           <div className="space-y-4">
             {activities.map((activity, index) => {

@@ -28,7 +28,7 @@ import { mockAttendanceRecords } from '../../lib/mock-data';
 import { mockDonations } from '../../lib/mock-giving-data';
 
 export const MemberPortalShowcase: React.FC = () => {
-  const [activeView, setActiveView] = useState<'intro' | 'login' | 'dashboard' | 'profile' | 'family' | 'biometric' | 'service-qr' | 'kiosk'>('intro');
+  const [activeView, setActiveView] = useState<'intro' | 'login' | 'dashboard' | 'profile' | 'family'>('intro');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedMember] = useState(mockMembers[0]);
 
@@ -117,37 +117,37 @@ export const MemberPortalShowcase: React.FC = () => {
       <div className="min-h-screen bg-[#0A0A0F] p-6">
         <div className="max-w-6xl mx-auto space-y-6">
           {/* Header */}
-          <Card className="bg-gradient-to-r from-[#1CE479]/20 to-[#1CE479]/5 border-[#1CE479]/30">
+          <Card className="bg-gradient-to-r from-primary/20 to-primary/5 border-primary/30">
             <CardHeader>
               <CardTitle className="text-3xl text-white flex items-center gap-3">
-                <User className="w-8 h-8 text-[#1CE479]" />
-                Phase 15: Member Self-Service & Advanced Check-In
+                <User className="w-8 h-8 text-primary" />
+                Phase 15: Member Self-Service Portal
               </CardTitle>
               <CardDescription className="text-gray-300 text-lg">
-                Complete member portal with QR code check-in, biometric authentication, and family management
+                Complete member portal with Google OAuth, profile management, and family management
               </CardDescription>
             </CardHeader>
           </Card>
 
           {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card
-              className="bg-[#1A1A20] border-[#2A2A30] hover:border-[#1CE479] cursor-pointer transition-colors"
+              className="bg-[#1A1A20] border-[#2A2A30] hover:border-primary cursor-pointer transition-colors"
               onClick={() => setActiveView('login')}
             >
               <CardHeader>
-                <div className="w-12 h-12 bg-[#1CE479]/20 rounded-lg flex items-center justify-center mb-3">
-                  <LogIn className="w-6 h-6 text-[#1CE479]" />
+                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-3">
+                  <LogIn className="w-6 h-6 text-primary" />
                 </div>
                 <CardTitle className="text-white">Member Login</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Multi-method authentication: phone, email, membership ID, QR code, or fingerprint
+                  Google OAuth first, then email/phone/Member ID with password
                 </CardDescription>
               </CardHeader>
             </Card>
 
             <Card
-              className="bg-[#1A1A20] border-[#2A2A30] hover:border-[#1CE479] cursor-pointer transition-colors"
+              className="bg-[#1A1A20] border-[#2A2A30] hover:border-primary cursor-pointer transition-colors"
               onClick={() => {
                 setIsLoggedIn(true);
                 setActiveView('dashboard');
@@ -159,13 +159,13 @@ export const MemberPortalShowcase: React.FC = () => {
                 </div>
                 <CardTitle className="text-white">Member Dashboard</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Personal stats, attendance history, giving records, and quick check-in
+                  Personal stats, attendance history, giving records, and event check-in
                 </CardDescription>
               </CardHeader>
             </Card>
 
             <Card
-              className="bg-[#1A1A20] border-[#2A2A30] hover:border-[#1CE479] cursor-pointer transition-colors"
+              className="bg-[#1A1A20] border-[#2A2A30] hover:border-primary cursor-pointer transition-colors"
               onClick={() => setActiveView('profile')}
             >
               <CardHeader>
@@ -174,13 +174,13 @@ export const MemberPortalShowcase: React.FC = () => {
                 </div>
                 <CardTitle className="text-white">Profile Editor</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Update personal info, photo, contact details, and security settings
+                  Update personal info, photo, contact details, link Google account, and security settings
                 </CardDescription>
               </CardHeader>
             </Card>
 
             <Card
-              className="bg-[#1A1A20] border-[#2A2A30] hover:border-[#1CE479] cursor-pointer transition-colors"
+              className="bg-[#1A1A20] border-[#2A2A30] hover:border-primary cursor-pointer transition-colors"
               onClick={() => setActiveView('family')}
             >
               <CardHeader>
@@ -189,52 +189,7 @@ export const MemberPortalShowcase: React.FC = () => {
                 </div>
                 <CardTitle className="text-white">Family Management</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Link spouse and children, generate family QR codes
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card
-              className="bg-[#1A1A20] border-[#2A2A30] hover:border-[#1CE479] cursor-pointer transition-colors"
-              onClick={() => setActiveView('biometric')}
-            >
-              <CardHeader>
-                <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center mb-3">
-                  <Fingerprint className="w-6 h-6 text-yellow-400" />
-                </div>
-                <CardTitle className="text-white">Biometric Enrollment</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Register fingerprint for fast, secure check-in
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card
-              className="bg-[#1A1A20] border-[#2A2A30] hover:border-[#1CE479] cursor-pointer transition-colors"
-              onClick={() => setActiveView('service-qr')}
-            >
-              <CardHeader>
-                <div className="w-12 h-12 bg-[#1CE479]/20 rounded-lg flex items-center justify-center mb-3">
-                  <QrCode className="w-6 h-6 text-[#1CE479]" />
-                </div>
-                <CardTitle className="text-white">Service QR Generator</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Generate QR codes for services, project on screen or print
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card
-              className="bg-[#1A1A20] border-[#2A2A30] hover:border-[#1CE479] cursor-pointer transition-colors"
-              onClick={() => setActiveView('kiosk')}
-            >
-              <CardHeader>
-                <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-3">
-                  <Calendar className="w-6 h-6 text-green-400" />
-                </div>
-                <CardTitle className="text-white">Check-In Kiosk</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Full-screen kiosk mode for entrance tablets
+                  Link spouse and children, manage family members
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -248,19 +203,19 @@ export const MemberPortalShowcase: React.FC = () => {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
-                  <p className="text-3xl text-[#1CE479] mb-1">7</p>
-                  <p className="text-sm text-gray-400">New Components</p>
+                  <p className="text-3xl text-primary mb-1">4</p>
+                  <p className="text-sm text-gray-400">Member Features</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl text-[#1CE479] mb-1">5</p>
+                  <p className="text-3xl text-primary mb-1">4</p>
                   <p className="text-sm text-gray-400">Login Methods</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl text-[#1CE479] mb-1">100%</p>
-                  <p className="text-sm text-gray-400">Mobile Optimized</p>
+                  <p className="text-3xl text-primary mb-1">100%</p>
+                  <p className="text-sm text-gray-400">Mobile Optimised</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl text-[#1CE479] mb-1">✓</p>
+                  <p className="text-3xl text-primary mb-1">✓</p>
                   <p className="text-sm text-gray-400">Production Ready</p>
                 </div>
               </div>

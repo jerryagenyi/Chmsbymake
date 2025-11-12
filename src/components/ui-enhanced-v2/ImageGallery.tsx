@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download, Share2 } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Dialog, DialogContent } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 
 interface GalleryImage {
   id: string;
@@ -192,6 +192,14 @@ export const ImageLightbox: React.FC<ImageLightboxProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-0">
+        {/* Hidden accessibility header */}
+        <DialogHeader className="sr-only">
+          <DialogTitle>Image Gallery</DialogTitle>
+          <DialogDescription>
+            Viewing image {currentIndex + 1} of {images.length}
+          </DialogDescription>
+        </DialogHeader>
+
         {/* Header */}
         <div className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/80 to-transparent p-4">
           <div className="flex items-center justify-between">

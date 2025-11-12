@@ -15,24 +15,29 @@ import {
   Download, 
   Upload,
   Search,
-  SlidersHorizontal
+  SlidersHorizontal,
+  X
 } from 'lucide-react';
 import { Member, MemberFilters as MemberFiltersType } from '../../types/member';
 import { MemberCard } from './MemberCard';
 import { MemberTable } from './MemberTable';
 import { MemberFilters } from './MemberFilters';
+import { MemberDetails } from './MemberDetails';
+import { AddMemberForm } from './AddMemberForm';
+import { ImportExportDialog } from './ImportExportDialog';
+import { BulkActionsBar } from './BulkActionsBar';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 
 type ViewMode = 'grid' | 'table';
 
 interface MemberListProps {
   members: Member[];
-  onAddMember?: () => void;
+  onAddMember?: (member: Partial<Member>) => void;
   onEditMember?: (member: Member) => void;
   onDeleteMember?: (member: Member) => void;
   onViewMember?: (member: Member) => void;
   onExport?: () => void;
-  onImport?: () => void;
+  onImport?: (members: Partial<Member>[]) => void;
 }
 
 export function MemberList({
@@ -48,6 +53,10 @@ export function MemberList({
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
   const [filters, setFilters] = React.useState<MemberFiltersType>({});
   const [quickSearch, setQuickSearch] = React.useState('');
+  const [selectedMember, setSelectedMember] = React.useState<Member | null>(null);
+  const [showAddForm, setShowAddForm] = React.useState(false);
+  const [showImportDialog, setShowImportDialog] = React.useState(false);
+  const [showExportDialog, setShowExportDialog] = React.useState(false);
 
   // Filter members based on current filters
   const filteredMembers = React.useMemo(() => {
@@ -156,6 +165,33 @@ export function MemberList({
     };
   }, [filteredMembers, selectedIds]);
 
+  const handleViewMember = (member: Member) => {
+    setSelectedMember(member);
+    onViewMember?.(member);
+  };
+
+  const handleBackToList = () => {
+    setSelectedMember(null);
+  };
+
+  // If a member is selected, show detail view
+  if (selectedMember) {
+    return (
+      <MemberDetails
+        member={selectedMember}
+        onBack={handleBackToList}
+        onEdit={onEditMember}
+        onDelete={(member) => {
+          onDeleteMember?.(member);
+          handleBackToList();
+        }}
+        onMessage={(member) => {
+          alert(`Message feature coming soon for ${member.firstName} ${member.lastName}`);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header with Actions */}
@@ -180,19 +216,19 @@ export function MemberList({
 
         <div className="flex items-center gap-2">
           {onImport && (
-            <Button variant="outline" onClick={onImport} className="gap-2">
+            <Button variant="outline" onClick={() => setShowImportDialog(true)} className="gap-2">
               <Upload className="h-4 w-4" />
               Import
             </Button>
           )}
           {onExport && (
-            <Button variant="outline" onClick={onExport} className="gap-2">
+            <Button variant="outline" onClick={() => setShowExportDialog(true)} className="gap-2">
               <Download className="h-4 w-4" />
               Export
             </Button>
           )}
           {onAddMember && (
-            <Button onClick={onAddMember} className="gap-2">
+            <Button onClick={() => setShowAddForm(true)} className="gap-2">
               <Plus className="h-4 w-4" />
               Add Member
             </Button>
@@ -208,8 +244,18 @@ export function MemberList({
             placeholder="Quick search by name, email, or phone..."
             value={quickSearch}
             onChange={(e) => setQuickSearch(e.target.value)}
-            className="pl-9"
+            className="pl-9 pr-9"
           />
+          {quickSearch && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+              onClick={() => setQuickSearch('')}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -262,7 +308,7 @@ export function MemberList({
             </Button>
           )}
           {!quickSearch && Object.keys(filters).length === 0 && onAddMember && (
-            <Button onClick={onAddMember} className="gap-2">
+            <Button onClick={() => setShowAddForm(true)} className="gap-2">
               <Plus className="h-4 w-4" />
               Add Your First Member
             </Button>
@@ -274,22 +320,88 @@ export function MemberList({
             <MemberCard
               key={member.id}
               member={member}
-              onClick={onViewMember}
+              onClick={handleViewMember}
               onEdit={onEditMember}
               onDelete={onDeleteMember}
             />
           ))}
         </div>
       ) : (
-        <MemberTable
-          members={filteredMembers}
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          onMemberClick={onViewMember}
-          onEdit={onEditMember}
-          onDelete={onDeleteMember}
-        />
+        <div className="relative">
+          <MemberTable
+            members={filteredMembers}
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            onMemberClick={handleViewMember}
+            onEdit={onEditMember}
+            onDelete={onDeleteMember}
+          />
+          
+          {/* Bulk Actions Bar - Shows when members are selected */}
+          {selectedIds.length > 0 && (
+            <BulkActionsBar
+              selectedCount={selectedIds.length}
+              onExport={() => {
+                console.log('Exporting selected members:', selectedIds);
+                alert(`Exporting ${selectedIds.length} members...`);
+              }}
+              onDelete={() => {
+                if (confirm(`Are you sure you want to delete ${selectedIds.length} members?`)) {
+                  console.log('Deleting members:', selectedIds);
+                  alert('Delete functionality would be implemented here');
+                  setSelectedIds([]);
+                }
+              }}
+              onSendMessage={() => {
+                console.log('Sending message to:', selectedIds);
+                alert(`Messaging ${selectedIds.length} members...`);
+              }}
+              onAddToGroup={() => {
+                console.log('Adding to group:', selectedIds);
+                alert(`Adding ${selectedIds.length} members to group...`);
+              }}
+              onAddTags={() => {
+                console.log('Adding tags to:', selectedIds);
+                alert(`Adding tags to ${selectedIds.length} members...`);
+              }}
+              onChangeStatus={() => {
+                console.log('Changing status for:', selectedIds);
+                alert(`Changing status for ${selectedIds.length} members...`);
+              }}
+              onClose={() => setSelectedIds([])}
+            />
+          )}
+        </div>
       )}
+
+      {/* Add Member Form Dialog */}
+      <AddMemberForm
+        open={showAddForm}
+        onClose={() => setShowAddForm(false)}
+        onSubmit={(member) => {
+          onAddMember?.(member);
+          setShowAddForm(false);
+        }}
+      />
+
+      {/* Import Dialog */}
+      <ImportExportDialog
+        open={showImportDialog}
+        onClose={() => setShowImportDialog(false)}
+        mode="import"
+        onImport={(importedMembers) => {
+          onImport?.(importedMembers);
+          setShowImportDialog(false);
+        }}
+      />
+
+      {/* Export Dialog */}
+      <ImportExportDialog
+        open={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+        mode="export"
+        members={members}
+      />
     </div>
   );
 }

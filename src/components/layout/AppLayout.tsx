@@ -9,27 +9,55 @@ import { SecondarySidebar } from './SecondarySidebar';
 import { Header } from './Header';
 import { MobileBottomNav } from './MobileBottomNav';
 import { useIsMobile } from '../ui/use-mobile';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '../ui/button';
 
 interface AppLayoutProps {
   children: React.ReactNode;
   showSecondarySidebar?: boolean;
+  onNavigate?: (path: string) => void;
+  currentPath?: string;
 }
 
-export function AppLayout({ children, showSecondarySidebar = true }: AppLayoutProps) {
+export function AppLayout({ children, showSecondarySidebar = true, onNavigate, currentPath }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [secondarySidebarOpen, setSecondarySidebarOpen] = useState(true);
+  const [secondarySidebarOpen, setSecondarySidebarOpen] = useState(false); // Changed to false - closed by default
   const isMobile = useIsMobile();
 
   // On mobile, sidebars should be collapsed by default
+  // Load sidebar state from localStorage for desktop
   React.useEffect(() => {
     if (isMobile) {
       setSidebarOpen(false);
       setSecondarySidebarOpen(false);
     } else {
-      setSidebarOpen(true);
-      setSecondarySidebarOpen(true);
+      const savedLeftSidebar = localStorage.getItem('sidebar-left-open');
+      const savedRightSidebar = localStorage.getItem('sidebar-right-open');
+      
+      if (savedLeftSidebar !== null) {
+        setSidebarOpen(savedLeftSidebar === 'true');
+      }
+      if (savedRightSidebar !== null) {
+        setSecondarySidebarOpen(savedRightSidebar === 'true');
+      } else {
+        // If no saved state, default to closed for right sidebar
+        setSecondarySidebarOpen(false);
+      }
     }
   }, [isMobile]);
+
+  // Save sidebar state to localStorage (desktop only)
+  React.useEffect(() => {
+    if (!isMobile) {
+      localStorage.setItem('sidebar-left-open', sidebarOpen.toString());
+    }
+  }, [sidebarOpen, isMobile]);
+
+  React.useEffect(() => {
+    if (!isMobile) {
+      localStorage.setItem('sidebar-right-open', secondarySidebarOpen.toString());
+    }
+  }, [secondarySidebarOpen, isMobile]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,16 +70,65 @@ export function AppLayout({ children, showSecondarySidebar = true }: AppLayoutPr
       {/* Main Layout Grid */}
       <div className="flex h-[calc(100vh-64px)]">
         {/* Left Sidebar - Navigation */}
-        <Sidebar
-          open={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-          isMobile={isMobile}
-        />
+        {!isMobile && (
+          <aside
+            className={`
+              bg-card border-r border-border flex-shrink-0
+              transition-all duration-300 ease-in-out
+              ${sidebarOpen ? 'w-[280px]' : 'w-0'}
+            `}
+          >
+            <div className={`w-[280px] ${sidebarOpen ? 'block' : 'hidden'}`}>
+              <Sidebar
+                open={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+                isMobile={isMobile}
+                onNavigate={onNavigate}
+                currentPath={currentPath}
+              />
+            </div>
+          </aside>
+        )}
+        
+        {/* Mobile Left Sidebar (Overlay) */}
+        {isMobile && (
+          <Sidebar
+            open={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+            isMobile={isMobile}
+            onNavigate={onNavigate}
+            currentPath={currentPath}
+          />
+        )}
+        
+        {/* Collapse/Expand Button for Left Sidebar (Desktop only) */}
+        {!isMobile && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className={`
+              absolute left-2 top-20 h-8 w-8 z-50 bg-card border border-border shadow-lg
+              transition-all duration-300
+              hover:bg-accent hover:shadow-xl
+            `}
+            style={{
+              left: sidebarOpen ? '272px' : '8px',
+            }}
+            title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+          >
+            {sidebarOpen ? (
+              <ChevronLeft className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )}
+          </Button>
+        )}
 
         {/* Main Content Area */}
         <main
           className={`
-            flex-1 overflow-y-auto
+            flex-1 overflow-y-auto relative
             ${isMobile ? 'pb-16' : ''}
           `}
         >
@@ -62,11 +139,58 @@ export function AppLayout({ children, showSecondarySidebar = true }: AppLayoutPr
 
         {/* Right Sidebar - Chat/Secondary */}
         {showSecondarySidebar && (
-          <SecondarySidebar
-            open={secondarySidebarOpen}
-            onClose={() => setSecondarySidebarOpen(false)}
-            isMobile={isMobile}
-          />
+          <>
+            {/* Collapse/Expand Button for Right Sidebar (Desktop only) */}
+            {!isMobile && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSecondarySidebarOpen(!secondarySidebarOpen)}
+                className={`
+                  absolute right-2 top-20 h-8 w-8 z-50 bg-card border border-border shadow-lg
+                  transition-all duration-300
+                  hover:bg-accent hover:shadow-xl
+                `}
+                style={{
+                  right: secondarySidebarOpen ? '312px' : '8px',
+                }}
+                title={secondarySidebarOpen ? 'Collapse activity panel' : 'Expand activity panel'}
+              >
+                {secondarySidebarOpen ? (
+                  <ChevronRight className="h-4 w-4" />
+                ) : (
+                  <ChevronLeft className="h-4 w-4" />
+                )}
+              </Button>
+            )}
+            
+            {!isMobile && (
+              <aside
+                className={`
+                  bg-card border-l border-border flex-shrink-0
+                  transition-all duration-300 ease-in-out
+                  ${secondarySidebarOpen ? 'w-[320px]' : 'w-0'}
+                `}
+              >
+                <div className={`w-[320px] ${secondarySidebarOpen ? 'block' : 'hidden'}`}>
+                  <SecondarySidebar
+                    open={secondarySidebarOpen}
+                    onClose={() => setSecondarySidebarOpen(false)}
+                    isMobile={isMobile}
+                  />
+                </div>
+              </aside>
+            )}
+            
+            {/* Mobile Right Sidebar (Overlay) */}
+            {isMobile && (
+              <SecondarySidebar
+                open={secondarySidebarOpen}
+                onClose={() => setSecondarySidebarOpen(false)}
+                isMobile={isMobile}
+              />
+            )}
+          </>
         )}
       </div>
 

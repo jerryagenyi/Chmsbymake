@@ -20,23 +20,23 @@ import {
 } from 'recharts';
 
 const weeklyData = [
-  { date: 'Week 1', attendance: 245, target: 250 },
-  { date: 'Week 2', attendance: 268, target: 250 },
-  { date: 'Week 3', attendance: 289, target: 250 },
-  { date: 'Week 4', attendance: 312, target: 250 },
-  { date: 'Week 5', attendance: 295, target: 250 },
-  { date: 'Week 6', attendance: 334, target: 250 },
-  { date: 'Week 7', attendance: 356, target: 250 },
-  { date: 'Week 8', attendance: 342, target: 250 },
+  { date: 'Week 1', attendance: 245, visitors: 45, target: 250 },
+  { date: 'Week 2', attendance: 268, visitors: 52, target: 250 },
+  { date: 'Week 3', attendance: 289, visitors: 48, target: 250 },
+  { date: 'Week 4', attendance: 312, visitors: 58, target: 250 },
+  { date: 'Week 5', attendance: 295, visitors: 50, target: 250 },
+  { date: 'Week 6', attendance: 334, visitors: 62, target: 250 },
+  { date: 'Week 7', attendance: 356, visitors: 68, target: 250 },
+  { date: 'Week 8', attendance: 342, visitors: 60, target: 250 },
 ];
 
 const monthlyData = [
-  { month: 'Jan', attendance: 980, target: 1000 },
-  { month: 'Feb', attendance: 1050, target: 1000 },
-  { month: 'Mar', attendance: 1120, target: 1000 },
-  { month: 'Apr', attendance: 1200, target: 1000 },
-  { month: 'May', attendance: 1180, target: 1000 },
-  { month: 'Jun', attendance: 1280, target: 1000 },
+  { month: 'Jan', attendance: 980, visitors: 180, target: 1000 },
+  { month: 'Feb', attendance: 1050, visitors: 195, target: 1000 },
+  { month: 'Mar', attendance: 1120, visitors: 210, target: 1000 },
+  { month: 'Apr', attendance: 1200, visitors: 230, target: 1000 },
+  { month: 'May', attendance: 1180, visitors: 215, target: 1000 },
+  { month: 'Jun', attendance: 1280, visitors: 245, target: 1000 },
 ];
 
 interface AttendanceChartProps {
@@ -112,7 +112,7 @@ export function AttendanceChart({
               <Line
                 type="monotone"
                 dataKey="target"
-                stroke="hsl(var(--muted-foreground))"
+                stroke="hsl(var(--chart-2))"
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 dot={false}

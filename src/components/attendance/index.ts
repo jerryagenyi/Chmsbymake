@@ -4,10 +4,12 @@
  */
 
 export { AttendanceTracker } from './AttendanceTracker';
-export { ServiceSelector } from './ServiceSelector';
-export { MemberCheckIn } from './MemberCheckIn';
-export { QRCodeGenerator } from './QRCodeGenerator';
-export { QRCodeScanner } from './QRCodeScanner';
-export { MemberQRCodes } from './MemberQRCodes';
-export { ServiceQRGenerator } from './ServiceQRGenerator';
+export { AttendanceServiceSelector } from './AttendanceServiceSelector';
+export { ServiceSpecificQRGenerator } from './ServiceSpecificQRGenerator';
 export { CheckInKiosk } from './CheckInKiosk';
+export { MobileCheckIn } from './MobileCheckIn';
+export { CheckInToast, type CheckInNotification } from './CheckInToast';
+export { DetachableQRCode } from './DetachableQRCode';
+export { MemberCheckIn } from './MemberCheckIn';
+export { QRCodeScanner } from './QRCodeScanner';
+export { ServiceSelector } from './ServiceSelector';

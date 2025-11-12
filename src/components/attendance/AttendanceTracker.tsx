@@ -32,6 +32,7 @@ import { Member } from '../../types/member';
 import { Service, AttendanceRecord, AttendanceStatus, AttendanceStats } from '../../types/attendance';
 import { MemberCheckIn } from './MemberCheckIn';
 import { ServiceSelector } from './ServiceSelector';
+import { AttendanceServiceSelector } from './AttendanceServiceSelector';
 import { QRCodeScanner } from './QRCodeScanner';
 import { cn } from '../ui/utils';
 
@@ -202,12 +203,15 @@ export function AttendanceTracker({
 
       {/* Service Selection */}
       {!selectedServiceId && (
-        <ServiceSelector
-          services={services}
-          selectedServiceId={selectedServiceId}
-          onSelectService={handleSelectService}
-          onCreateService={onCreateService}
-        />
+        <>
+          {/* Enhanced Service Selector (NEW) */}
+          <AttendanceServiceSelector
+            services={services}
+            selectedServiceId={selectedServiceId}
+            onSelectService={handleSelectService}
+            onCreateService={onCreateService}
+          />
+        </>
       )}
 
       {/* Attendance Interface */}
@@ -436,17 +440,7 @@ export function AttendanceTracker({
               QR Code Check-In
             </DialogTitle>
           </DialogHeader>
-          <QRCodeScanner
-            onScanSuccess={(data) => {
-              handleQRScan(data);
-              // Auto-close after 2 seconds
-              setTimeout(() => setShowQRScanner(false), 2000);
-            }}
-            onScanError={(error) => {
-              console.error('Scan error:', error);
-            }}
-            isActive={showQRScanner}
-          />
+          <QRCodeScanner />
         </DialogContent>
       </Dialog>
     </div>

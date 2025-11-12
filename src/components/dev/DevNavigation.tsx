@@ -40,12 +40,17 @@ export function DevNavigation({ currentPage, onNavigate, demoMode = false, onTog
     <div className="fixed bottom-6 left-6 z-50">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button
-            size="lg"
-            className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-          >
-            <Code className="h-6 w-6" />
-          </Button>
+          <div className="flex flex-col items-center gap-2">
+            <Button
+              size="lg"
+              className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 bg-[#1CE479] hover:bg-[#1CE479]/90 text-[#0A0A0F]"
+            >
+              <Code className="h-6 w-6" />
+            </Button>
+            <span className="text-xs font-medium text-[#1CE479] bg-[#0A0A0F]/80 px-2 py-1 rounded-md">
+              View Inner Page
+            </span>
+          </div>
         </SheetTrigger>
         <SheetContent side="left" className="w-80 bg-[#0A0A0F] border-[#1A1A20]">
           <SheetHeader>

@@ -83,6 +83,7 @@ export interface Member {
   
   // Church Involvement
   family?: FamilyMember[];
+  familyId?: string; // Link members in same family
   ministries?: Ministry[];
   groups?: Group[];
   skills?: string[];

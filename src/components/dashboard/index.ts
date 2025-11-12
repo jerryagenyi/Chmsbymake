@@ -1,17 +1,24 @@
 /**
- * ChurchAfrica ChMS - Dashboard Components Index
- * Centralized exports for all dashboard components
+ * Dashboard Components - Index
  */
 
 export { Dashboard } from './Dashboard';
 export { KPICard } from './KPICard';
+export { DraggableKPICard } from './DraggableKPICard';
+export { DashboardCustomizer } from './DashboardCustomizer';
+export { DashboardTour } from './DashboardTour';
 export { AttendanceChart } from './AttendanceChart';
 export { GivingChart } from './GivingChart';
+export { VisitorsChart } from './VisitorsChart';
 export { ActivityFeed } from './ActivityFeed';
 export { QuickActions } from './QuickActions';
 export { UpcomingEvents } from './UpcomingEvents';
 
-export type { KPICardProps, TrendDirection } from './KPICard';
-export type { Activity, ActivityType } from './ActivityFeed';
-export type { QuickAction } from './QuickActions';
-export type { ChurchEvent } from './UpcomingEvents';
+// Quick Action Dialogs
+export { AddMemberDialog, AddMemberButton } from './AddMemberDialog';
+export {
+  RecordAttendanceDialog,
+  CreateEventDialog,
+  RecordGivingDialog,
+  GenerateReportDialog,
+} from './QuickActionDialogs';

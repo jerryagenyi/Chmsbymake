@@ -6,3 +6,5 @@
 export { EventCard } from './EventCard';
 export { EventCalendar } from './EventCalendar';
 export { EventList } from './EventList';
+export { EventManagement } from './EventManagement';
+export { EventQRSystem } from './EventQRSystem';

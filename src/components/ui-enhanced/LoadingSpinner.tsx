@@ -1,101 +1,97 @@
 /**
- * LoadingSpinner - Animated loading indicators
- * Inspired by: https://uiverse.io/aaronross1/wicked-rat-49
+ * LoadingSpinner - Various loading indicator styles
+ * Includes: dots, spinner, pulse, and bars variants
  */
 
-import React from 'react';
-
 interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
   variant?: 'dots' | 'spinner' | 'pulse' | 'bars';
+  size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
-export function LoadingSpinner({ size = 'md', variant = 'dots', className = '' }: LoadingSpinnerProps) {
-  const sizeMap = {
-    sm: 16,
-    md: 24,
-    lg: 32,
-    xl: 48
+export function LoadingSpinner({ 
+  variant = 'spinner', 
+  size = 'md',
+  className = '' 
+}: LoadingSpinnerProps) {
+  const sizeClasses = {
+    sm: 'w-4 h-4',
+    md: 'w-8 h-8',
+    lg: 'w-12 h-12'
   };
 
-  const dimension = sizeMap[size];
+  const dotSizes = {
+    sm: 'w-1.5 h-1.5',
+    md: 'w-2 h-2',
+    lg: 'w-3 h-3'
+  };
+
+  const barHeights = {
+    sm: 'h-4',
+    md: 'h-6',
+    lg: 'h-8'
+  };
 
   if (variant === 'dots') {
     return (
-      <div className={`flex items-center justify-center gap-1 ${className}`}>
+      <div className={`flex items-center gap-1.5 ${className}`}>
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="rounded-full bg-[#1CE479]"
+            className={`${dotSizes[size]} bg-primary rounded-full`}
             style={{
-              width: dimension / 4,
-              height: dimension / 4,
-              animation: `bounce 1.4s ease-in-out ${i * 0.16}s infinite both`
+              animation: `bounce 1.4s ease-in-out ${i * 0.16}s infinite`
             }}
           />
         ))}
         <style>{`
           @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
-            40% { transform: scale(1); opacity: 1; }
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
           }
         `}</style>
       </div>
-    );
-  }
-
-  if (variant === 'spinner') {
-    return (
-      <div 
-        className={`border-4 border-[#2A2A35] border-t-[#1CE479] rounded-full animate-spin ${className}`}
-        style={{ width: dimension, height: dimension }}
-      />
     );
   }
 
   if (variant === 'pulse') {
     return (
-      <div className={`relative ${className}`} style={{ width: dimension, height: dimension }}>
-        <div 
-          className="absolute inset-0 bg-[#1CE479] rounded-full opacity-75"
-          style={{ animation: 'pulse 1.5s ease-in-out infinite' }}
+      <div className={`${sizeClasses[size]} ${className}`}>
+        <div className="w-full h-full bg-primary rounded-full animate-pulse" 
+          style={{
+            animation: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }}
         />
-        <div 
-          className="absolute inset-0 bg-[#1CE479] rounded-full opacity-75"
-          style={{ animation: 'pulse 1.5s ease-in-out 0.5s infinite' }}
-        />
+      </div>
+    );
+  }
+
+  if (variant === 'bars') {
+    return (
+      <div className={`flex items-center gap-1 ${className}`}>
+        {[0, 1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className={`w-1 ${barHeights[size]} bg-primary rounded-full`}
+            style={{
+              animation: `bars 1.2s ease-in-out ${i * 0.1}s infinite`
+            }}
+          />
+        ))}
         <style>{`
-          @keyframes pulse {
-            0% { transform: scale(0.8); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.5; }
-            100% { transform: scale(0.8); opacity: 1; }
+          @keyframes bars {
+            0%, 40%, 100% { transform: scaleY(0.4); }
+            20% { transform: scaleY(1); }
           }
         `}</style>
       </div>
     );
   }
 
-  // bars variant
+  // Default: spinner variant
   return (
-    <div className={`flex items-center justify-center gap-1 ${className}`}>
-      {[0, 1, 2, 3].map((i) => (
-        <div
-          key={i}
-          className="bg-[#1CE479] rounded-sm"
-          style={{
-            width: dimension / 6,
-            height: dimension,
-            animation: `stretch 1.2s ease-in-out ${i * 0.1}s infinite`
-          }}
-        />
-      ))}
-      <style>{`
-        @keyframes stretch {
-          0%, 40%, 100% { transform: scaleY(0.4); }
-          20% { transform: scaleY(1); }
-        }
-      `}</style>
+    <div className={`${sizeClasses[size]} ${className}`}>
+      <div className="w-full h-full border-4 border-muted border-t-primary rounded-full animate-spin" />
     </div>
   );
 }
@@ -110,7 +106,7 @@ export function ChatLoadingIndicator({ className = '' }: { className?: string })
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className="w-2 h-2 bg-[#1CE479] rounded-full"
+          className="w-2 h-2 bg-primary rounded-full"
           style={{
             animation: `typing 1.4s ease-in-out ${i * 0.2}s infinite`
           }}

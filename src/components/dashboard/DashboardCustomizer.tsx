@@ -175,7 +175,7 @@ export function DashboardCustomizer({
         </SheetHeader>
 
         <ScrollArea className="h-[calc(100vh-120px)] pr-4 mt-6">
-          <div className="space-y-6">
+          <div className="space-y-6 px-1">  {/* Added px-1 for breathing room */}
             {/* AI Suggestions */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">

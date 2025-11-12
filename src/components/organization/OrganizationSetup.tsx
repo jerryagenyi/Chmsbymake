@@ -96,7 +96,7 @@ export function OrganizationSetup() {
               <Label htmlFor="orgName">Church Name *</Label>
               <Input
                 id="orgName"
-                placeholder="e.g., Victory Chapel Ministry"
+                placeholder="e.g., The OliveBrook Church, Abuja"
                 value={formData.orgName}
                 onChange={(e) => setFormData({ ...formData, orgName: e.target.value })}
               />

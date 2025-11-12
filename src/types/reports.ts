@@ -6,6 +6,7 @@
 import type { Currency, GivingCategory, PaymentMethod } from './giving';
 
 export type ReportType = 
+  | 'service_comparison'
   | 'giving_summary'
   | 'donor_statements'
   | 'tax_receipts'

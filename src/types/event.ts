@@ -3,6 +3,8 @@
  * Type definitions for event management system
  */
 
+import { ServiceType } from './service';
+
 export type EventType =
   | 'conference'
   | 'crusade'
@@ -17,6 +19,7 @@ export type EventType =
   | 'wedding'
   | 'funeral'
   | 'meeting'
+  | 'service' // NEW: For regular church services
   | 'other';
 
 export type EventStatus = 'draft' | 'published' | 'ongoing' | 'completed' | 'cancelled';
@@ -45,6 +48,11 @@ export interface Event {
   recurrenceEndDate?: string;
   recurrenceDays?: number[]; // 0-6 (Sunday-Saturday)
   
+  // Service-specific fields (for type === 'service')
+  serviceType?: ServiceType;
+  isRecurringService?: boolean;
+  linkedServiceId?: string; // Links to Service.id from /types/service.ts
+  
   // Location
   location: {
     type: 'physical' | 'online' | 'hybrid';
@@ -55,6 +63,8 @@ export interface Event {
     country?: string;
     onlineLink?: string;
     onlinePlatform?: string; // Zoom, Teams, etc.
+    buildingId?: string; // NEW: For location tracking
+    roomId?: string; // NEW: For location tracking
     mapCoordinates?: {
       lat: number;
       lng: number;
@@ -245,6 +255,7 @@ export const EVENT_TYPE_LABELS: Record<EventType, string> = {
   wedding: 'Wedding',
   funeral: 'Funeral',
   meeting: 'Meeting',
+  service: 'Service', // NEW: For regular church services
   other: 'Other',
 };
 
@@ -263,6 +274,7 @@ export const EVENT_TYPE_COLORS: Record<EventType, string> = {
   wedding: 'rose',
   funeral: 'slate',
   meeting: 'info',
+  service: 'blue', // NEW: For regular church services
   other: 'secondary',
 };
 

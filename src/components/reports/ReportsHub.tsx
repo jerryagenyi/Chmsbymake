@@ -15,6 +15,7 @@ import {
   Calendar,
   Receipt,
   Building2,
+  Clock,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
@@ -36,6 +37,15 @@ interface ReportsHubProps {
 
 export function ReportsHub({ onSelectReport }: ReportsHubProps) {
   const reportCategories: ReportCard[] = [
+    {
+      id: 'service_comparison',
+      title: 'Service Comparison',
+      description: 'Compare attendance and engagement across different service types',
+      icon: Clock,
+      color: 'text-[#1CE479]',
+      bgColor: 'bg-[#1CE479]/10',
+      available: true,
+    },
     {
       id: 'giving_summary',
       title: 'Giving Summary',

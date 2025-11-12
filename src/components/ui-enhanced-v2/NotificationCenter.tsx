@@ -241,10 +241,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                                   e.stopPropagation();
                                   onMarkAsRead(notification.id);
                                 }}
-                                className="h-6 w-6 p-0 hover:bg-[#2A2A30]"
+                                className="h-6 px-2 text-xs hover:bg-[#2A2A30] text-gray-400 hover:text-white"
                                 title="Mark as read"
                               >
-                                <Check className="w-3 h-3 text-gray-400" />
+                                <Check className="w-3 h-3 mr-1" />
+                                Mark read
                               </Button>
                             )}
 
@@ -255,10 +256,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                                 e.stopPropagation();
                                 onDelete(notification.id);
                               }}
-                              className="h-6 w-6 p-0 hover:bg-[#2A2A30]"
-                              title="Delete"
+                              className="h-6 px-2 text-xs hover:bg-red-500/10 text-gray-400 hover:text-red-400"
+                              title="Clear notification"
                             >
-                              <X className="w-3 h-3 text-gray-400" />
+                              <X className="w-3 h-3 mr-1" />
+                              Clear
                             </Button>
                           </div>
                         </div>

@@ -167,7 +167,7 @@ export function DonorStatements({ donors, onBack }: DonorStatementsProps) {
         <Card className="print-only" style={{ display: 'none' }}>
           <CardContent className="pt-6">
             <div className="text-center mb-6">
-              <h1 className="text-3xl font-bold mb-2">Victory Chapel Ministry</h1>
+              <h1 className="text-3xl font-bold mb-2">The OliveBrook Church, Abuja</h1>
               <p className="text-sm text-muted-foreground">Annual Donor Giving Statement</p>
             </div>
           </CardContent>
@@ -353,8 +353,8 @@ export function DonorStatements({ donors, onBack }: DonorStatementsProps) {
         <Card className="bg-primary/5 border-primary/20">
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">
-              <strong>Note:</strong> This statement is for your records. All donations were made to Victory Chapel Ministry, 
-              a registered religious organization. Please consult with your tax advisor regarding the deductibility of these contributions.
+              <strong>Note:</strong> This statement is for your records. All donations were made to The OliveBrook Church, Abuja, 
+              a registered religious organisation. Please consult with your tax adviser regarding the deductibility of these contributions.
               For questions about this statement, please contact our finance department.
             </p>
           </CardContent>

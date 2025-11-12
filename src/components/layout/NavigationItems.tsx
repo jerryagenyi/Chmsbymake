@@ -14,6 +14,7 @@ import {
   Heart,
   Folder,
   DollarSign,
+  Palette,
   LucideIcon,
 } from 'lucide-react';
 
@@ -106,6 +107,13 @@ export const utilityNavigation: NavigationItem[] = [
     icon: Settings,
     href: '/settings',
     requiresAuth: true,
+  },
+  {
+    id: 'colour-palette',
+    label: 'Colour Palette',
+    icon: Palette,
+    href: '/color-palette',
+    requiresAuth: false,
   },
 ];
 
