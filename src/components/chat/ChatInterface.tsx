@@ -21,11 +21,13 @@ import {
   Smile,
   Phone,
   Video,
-  Info
+  Info,
+  Plus
 } from 'lucide-react';
 import { mockChatRooms, mockChatMessages, mockUserPresence } from '../../lib/mock-chat-data';
 import { ChatRoom, ChatMessage } from '../../types/chat';
 import { format } from 'date-fns';
+import { PageHeader } from '../layout/PageHeader';
 
 export function ChatInterface() {
   const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(mockChatRooms[0]);
@@ -89,21 +91,16 @@ export function ChatInterface() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="flex items-center gap-2">
-            <MessageSquare className="h-6 w-6" />
-            Real-time Chat
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            Communicate with your church community
-          </p>
-        </div>
-        <Button>
-          <Users className="h-4 w-4 mr-2" />
-          New Group
-        </Button>
-      </div>
+      <PageHeader
+        title="Real-time Chat"
+        description="Communicate with your church community"
+        action={
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            New Group
+          </Button>
+        }
+      />
 
       {/* Main Chat Layout */}
       <div className="grid grid-cols-12 gap-6 h-[calc(100vh-250px)]">

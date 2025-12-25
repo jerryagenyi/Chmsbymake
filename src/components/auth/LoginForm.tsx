@@ -14,6 +14,8 @@ import { Separator } from '../ui/separator';
 import { PasswordStrengthMeter } from '../ui-enhanced/PasswordStrengthMeter';
 import { Church, Mail, Lock, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useOrganization } from '../../contexts/OrganizationContext';
+import { ChurchLogo } from '../organization/ChurchLogo';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -28,6 +30,7 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const { organization } = useOrganization();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -82,14 +85,9 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
   return (
     <Card className="w-full max-w-lg">
       <CardHeader className="space-y-1">
-        <div className="flex items-center justify-center mb-4">
-          <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Church className="h-7 w-7 text-primary" />
-          </div>
-        </div>
-        <CardTitle className="text-center">Welcome Back</CardTitle>
+        <CardTitle className="text-center">Sign In</CardTitle>
         <CardDescription className="text-center">
-          Sign in to ChurchAfrica ChMS
+          Enter your credentials to access your church management system
         </CardDescription>
       </CardHeader>
 

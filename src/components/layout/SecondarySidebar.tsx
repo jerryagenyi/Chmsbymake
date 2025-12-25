@@ -127,22 +127,37 @@ function SecondarySidebarContent({ onClose, isMobile }: SecondarySidebarContentP
     },
   ];
 
+  // Calculate total unread messages
+  const totalUnread = conversations.reduce((sum, conv) => sum + conv.unread, 0);
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold">Messages & Activity</h3>
-          {isMobile && onClose && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {activeTab === 'messages' && totalUnread > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => console.log('Mark all as read')}
+                className="h-7 text-xs text-muted-foreground hover:text-foreground"
+              >
+                Mark All as Read
+              </Button>
+            )}
+            {isMobile && onClose && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="h-8 w-8"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Search */}

@@ -5,9 +5,6 @@
 
 import React from 'react';
 import { ThemeProvider } from './components/theme/ThemeProvider';
-import { AuthProvider } from './contexts/AuthContext';
-import { OrganizationProvider } from './contexts/OrganizationContext';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Dashboard } from './components/dashboard/Dashboard';
 import { MemberList } from './components/members/MemberList';
 import {
@@ -29,32 +26,52 @@ import { Service as ChurchService } from './types/service';
 import { mockServices as mockChurchServices } from './lib/mock-service-data';
 import { mockDonations, mockGivingStats, mockGivingTrends, mockDonors, mockCampaigns } from './lib/mock-giving-data';
 import { Donation } from './types/giving';
+import { Location } from './types/location';
 import { mockGivingSummaryReport } from './lib/mock-report-data';
 import { mockMembershipAnalytics, mockAttendanceAnalytics, mockChurchHealthAnalytics } from './lib/mock-analytics-data';
 import { mockAIInsights, mockChurnPredictions } from './lib/mock-ai-data';
+import { mockLocations } from './lib/mock-location-data';
 import { ServiceManager } from './components/services';
+import { ServicesPage } from './components/services';
 import { EventCalendar, EventList } from './components/events';
 import { EventManagement } from './components/events';
 import { DevNavigation } from './components/dev/DevNavigation';
 import { AuthPage } from './components/auth/AuthPage';
+import { LandingPage } from './components/landing';
 import { ChatInterface } from './components/chat/ChatInterface';
-import { OrganizationSetup } from './components/organization/OrganizationSetup';
 import { OrganizationManagement } from './components/organization/OrganizationManagement';
-import { GivingDashboard, DonationForm, CampaignManager } from './components/giving';
-import { ReportsHub, GivingReports, DonorStatements, TaxReceiptGenerator, ServiceComparisonReport } from './components/reports';
-import { AnalyticsHub, MembershipAnalytics, AttendanceAnalytics, ChurchHealthAnalytics } from './components/analytics';
+import { LocationManager } from './components/organization/LocationManager';
+import { MemberPortalShowcase } from './components/member-portal/MemberPortalShowcase';
+import { SubNavigation, SubNavigationItem } from './components/navigation/SubNavigation';
+import { PageHeader } from './components/layout/PageHeader';
+import { GivingDashboard } from './components/giving/GivingDashboard';
+import { DonationForm } from './components/giving/DonationForm';
+import { CampaignManager } from './components/giving/CampaignManager';
+import { ReportsHub } from './components/reports/ReportsHub';
+import { GivingReports } from './components/reports/GivingReports';
+import { DonorStatements } from './components/reports/DonorStatements';
+import { TaxReceiptGenerator } from './components/reports/TaxReceiptGenerator';
+import { ServiceComparisonReport } from './components/reports/ServiceComparisonReport';
+import { AnalyticsHub } from './components/analytics/AnalyticsHub';
+import { MembershipAnalytics } from './components/analytics';
+import { AttendanceAnalytics } from './components/analytics';
+import { ChurchHealthAnalytics } from './components/analytics';
 import { AIDashboard } from './components/ai';
 import { UIShowcase } from './components/ui-enhanced/UIShowcase';
 import { UXShowcase } from './components/ui-enhanced-v2/UXShowcase';
-import { MemberPortalShowcase } from './components/member-portal/MemberPortalShowcase';
 import { ColorPalette } from './components/settings/ColorPalette';
 import type { ReportType } from './types/reports';
 import type { AnalyticsModule } from './types/analytics';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = React.useState('dashboard');
+  // Routing state: 'public' pages vs 'app' pages
+  const [currentPage, setCurrentPage] = React.useState('landing');
   const [activeTab, setActiveTab] = React.useState('dashboard');
-  const [currentRoute, setCurrentRoute] = React.useState('/dashboard');
+  const [currentRoute, setCurrentRoute] = React.useState('/');
+  
+  // Determine if we're on a public page (landing, auth) or app page
+  const isPublicPage = currentPage === 'landing' || currentPage === 'auth';
+  
   const [attendanceRecords, setAttendanceRecords] = React.useState<AttendanceRecord[]>(mockAttendanceRecords);
   const [selectedServiceId, setSelectedServiceId] = React.useState<string>('s1');
   const [demoMode, setDemoMode] = React.useState(true); // Demo mode ON by default for showcase
@@ -63,11 +80,20 @@ export default function App() {
   
   // Church/Organization context
   const [currentBranch, setCurrentBranch] = React.useState<'wuse2' | 'kubwa'>('kubwa'); // Default to HQ
-  const churchName = "The OliveBrook Church, Abuja";
+  const churchName = "Victory Chapel Ministry";
   const branches = {
     wuse2: "Wuse 2, Abuja",
     kubwa: "Kubwa, Abuja (HQ)"
   };
+  
+  // Convert branches to array format for ServicesPage
+  const branchesArray = [
+    { id: 'kubwa', name: 'Kubwa Campus', location: 'Kubwa, Abuja (HQ)' },
+    { id: 'wuse2', name: 'Wuse 2 Campus', location: 'Wuse 2, Abuja' },
+  ];
+  
+  // Services state
+  const [services, setServices] = React.useState<ChurchService[]>(mockChurchServices);
   
   // Giving state
   const [showDonationForm, setShowDonationForm] = React.useState(false);
@@ -79,6 +105,9 @@ export default function App() {
   
   // Analytics state
   const [currentAnalyticsModule, setCurrentAnalyticsModule] = React.useState<AnalyticsModule | null>(null);
+  
+  // Location state
+  const [locations, setLocations] = React.useState<Location[]>(mockLocations);
   
   // Sync currentPage with activeTab for pages that are also tabs
   React.useEffect(() => {
@@ -245,12 +274,79 @@ export default function App() {
       alert(`Share Event: ${event.title}\n\nCopy this link to share: ${window.location.href}#event-${event.id}`);
     }
   };
+  
+  // Location handlers
+  const handleCreateLocation = (location: Partial<Location>) => {
+    console.log('Create location:', location);
+    const newLocation = location as Location;
+    setLocations(prev => [...prev, newLocation]);
+  };
+  
+  const handleUpdateLocation = (id: string, updates: Partial<Location>) => {
+    console.log('Update location:', id, updates);
+    setLocations(prev => prev.map(loc => loc.id === id ? { ...loc, ...updates } : loc));
+  };
+  
+  const handleDeleteLocation = (id: string) => {
+    console.log('Delete location:', id);
+    setLocations(prev => prev.filter(loc => loc.id !== id));
+  };
+
+  // Service handlers
+  const handleCreateService = (service: Omit<ChurchService, 'id' | 'createdAt' | 'updatedAt'>) => {
+    console.log('Create service:', service);
+    const newService: ChurchService = {
+      ...service,
+      id: `s${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setServices(prev => [...prev, newService]);
+  };
+
+  const handleUpdateService = (id: string, updates: Partial<ChurchService>) => {
+    console.log('Update service:', id, updates);
+    setServices(prev => prev.map(svc =>
+      svc.id === id
+        ? { ...svc, ...updates, updatedAt: new Date().toISOString() }
+        : svc
+    ));
+  };
+
+  const handleDeleteService = (id: string) => {
+    console.log('Delete service:', id);
+    if (confirm('Delete this service?')) {
+      setServices(prev => prev.filter(svc => svc.id !== id));
+    }
+  };
 
   // Render content based on current page
   const renderPageContent = () => {
+    // Special case: landing page is rendered without layout
+    if (currentPage === 'landing') {
+      return (
+        <LandingPage
+          onGetStarted={() => {
+            setCurrentPage('auth');
+            setCurrentRoute('/auth');
+          }}
+          onWatchDemo={() => {
+            alert('Demo video coming soon! For now, you can explore the demo mode by clicking "Get Started Free".');
+          }}
+        />
+      );
+    }
+    
     // Special case: auth page is rendered without layout
     if (currentPage === 'auth') {
-      return <AuthPage />;
+      return (
+        <AuthPage
+          onBackToLanding={() => {
+            setCurrentPage('landing');
+            setCurrentRoute('/');
+          }}
+        />
+      );
     }
     
     // Special case: Color Palette page
@@ -287,41 +383,41 @@ export default function App() {
           setActiveTab(value);
           setCurrentPage(value);
         }}>
-              <TabsList className="font-light">
-                <TabsTrigger value="dashboard" className="gap-2">
-                  <LayoutDashboard className="h-4 w-4" />
+              <TabsList style={{ fontWeight: '200' }}>
+                <TabsTrigger value="dashboard" className="gap-2" style={{ fontWeight: '200' }}>
+                  <LayoutDashboard className="h-4 w-4" style={{ strokeWidth: 1 }} />
                   Dashboard
                 </TabsTrigger>
-                <TabsTrigger value="members" className="gap-2">
-                  <Users className="h-4 w-4" />
+                <TabsTrigger value="members" className="gap-2" style={{ fontWeight: '200' }}>
+                  <Users className="h-4 w-4" style={{ strokeWidth: 1 }} />
                   Members
                 </TabsTrigger>
-                <TabsTrigger value="attendance" className="gap-2">
-                  <ClipboardCheck className="h-4 w-4" />
+                <TabsTrigger value="attendance" className="gap-2" style={{ fontWeight: '200' }}>
+                  <ClipboardCheck className="h-4 w-4" style={{ strokeWidth: 1 }} />
                   Attendance
                 </TabsTrigger>
-                <TabsTrigger value="services" className="gap-2">
-                  <QrCode className="h-4 w-4" />
+                <TabsTrigger value="services" className="gap-2" style={{ fontWeight: '200' }}>
+                  <QrCode className="h-4 w-4" style={{ strokeWidth: 1 }} />
                   Services
                 </TabsTrigger>
-                <TabsTrigger value="events" className="gap-2">
-                  <Calendar className="h-4 w-4" />
+                <TabsTrigger value="events" className="gap-2" style={{ fontWeight: '200' }}>
+                  <Calendar className="h-4 w-4" style={{ strokeWidth: 1 }} />
                   Events
                 </TabsTrigger>
-                <TabsTrigger value="chat" className="gap-2">
-                  <MessageSquare className="h-4 w-4" />
+                <TabsTrigger value="chat" className="gap-2" style={{ fontWeight: '200' }}>
+                  <MessageSquare className="h-4 w-4" style={{ strokeWidth: 1 }} />
                   Chat
                 </TabsTrigger>
-                <TabsTrigger value="organization" className="gap-2">
-                  <Building2 className="h-4 w-4" />
+                <TabsTrigger value="organization" className="gap-2" style={{ fontWeight: '200' }}>
+                  <Building2 className="h-4 w-4" style={{ strokeWidth: 1 }} />
                   Organisation
                 </TabsTrigger>
-                <TabsTrigger value="analytics" className="gap-2">
-                  <TrendingUp className="h-4 w-4" />
+                <TabsTrigger value="analytics" className="gap-2" style={{ fontWeight: '200' }}>
+                  <TrendingUp className="h-4 w-4" style={{ strokeWidth: 1 }} />
                   Analytics
                 </TabsTrigger>
-                <TabsTrigger value="ai" className="gap-2">
-                  <Brain className="h-4 w-4" />
+                <TabsTrigger value="ai" className="gap-2" style={{ fontWeight: '200' }}>
+                  <Brain className="h-4 w-4" style={{ strokeWidth: 1 }} />
                   AI Intelligence
                 </TabsTrigger>
               </TabsList>
@@ -345,54 +441,15 @@ export default function App() {
               {/* Attendance Tab */}
               <TabsContent value="attendance" className="mt-1">
                 <Tabs defaultValue="kiosk" className="space-y-4">
-                  <TabsList className="bg-transparent border-0 justify-start h-auto p-0 gap-0" style={{ marginLeft: '2.25em' }}>
-                    <div className="flex items-center gap-2">
-                      <Badge 
-                        variant="default" 
-                        className="pointer-events-none px-2 py-0.5 uppercase"
-                        style={{
-                          background: '#1b4332',
-                          fontWeight: 100,
-                          borderRadius: '2px',
-                          fontSize: '10px'
-                        }}
-                      >
-                        Attendance
-                      </Badge>
-                      <ChevronRight className="h-3 w-3 text-muted-foreground" />
-                    </div>
-                    <TabsTrigger 
-                      value="kiosk" 
-                      className="data-[state=active]:bg-transparent data-[state=inactive]:bg-transparent border-0 data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground px-2 pr-2 pl-2 font-light data-[state=active]:shadow-none rounded-sm h-auto py-0.5"
-                      style={{ fontSize: '0.8125rem' }}
-                    >
-                      Check-In Kiosk
-                    </TabsTrigger>
-                    <span className="text-[#1CE479] px-1.5 leading-none self-center" style={{ fontSize: '0.8125rem' }}>|</span>
-                    <TabsTrigger 
-                      value="checkin" 
-                      className="data-[state=active]:bg-transparent data-[state=inactive]:bg-transparent border-0 data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground px-2 pr-2 font-light data-[state=active]:shadow-none rounded-sm h-auto py-0.5"
-                      style={{ fontSize: '0.8125rem' }}
-                    >
-                      Manual Check-In
-                    </TabsTrigger>
-                    <span className="text-[#1CE479] px-1.5 leading-none self-center" style={{ fontSize: '0.8125rem' }}>|</span>
-                    <TabsTrigger 
-                      value="history" 
-                      className="data-[state=active]:bg-transparent data-[state=inactive]:bg-transparent border-0 data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground px-2 pr-2 font-light data-[state=active]:shadow-none rounded-sm h-auto py-0.5"
-                      style={{ fontSize: '0.8125rem' }}
-                    >
-                      History
-                    </TabsTrigger>
-                    <span className="text-[#1CE479] px-1.5 leading-none self-center" style={{ fontSize: '0.8125rem' }}>|</span>
-                    <TabsTrigger 
-                      value="reports" 
-                      className="data-[state=active]:bg-transparent data-[state=inactive]:bg-transparent border-0 data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground px-2 font-light data-[state=active]:shadow-none rounded-sm h-auto py-0.5"
-                      style={{ fontSize: '0.8125rem' }}
-                    >
-                      Reports
-                    </TabsTrigger>
-                  </TabsList>
+                  <SubNavigation
+                    sectionName="Attendance"
+                    items={[
+                      { value: 'kiosk', label: 'Check-In Kiosk' },
+                      { value: 'checkin', label: 'Manual Check-In' },
+                      { value: 'history', label: 'History' },
+                      { value: 'reports', label: 'Reports' },
+                    ]}
+                  />
 
                   <TabsContent value="kiosk">
                     <div className="space-y-6">
@@ -401,9 +458,9 @@ export default function App() {
                         <>
                           {/* Church & Branch Info + Service Card - Combined Header */}
                           <div className="bg-[#1A1A20] rounded-lg p-6 space-y-4">
-                            {/* Header with Attendance Management on left and Church abbreviation + Campus badge on right */}
+                            {/* Header with Attendance Management on left and Church acronym + Campus badge on right */}
                             <div className="flex items-center justify-between">
-                              <h1 className="mb-0">Attendance Management</h1>
+                              <h1 className="mb-0 text-2xl font-light">Attendance Management</h1>
                               <div className="flex items-center gap-2">
                                 <span className="text-lg">TOBC</span>
                                 <Badge 
@@ -528,9 +585,9 @@ export default function App() {
                         <div className="fixed inset-0 z-50 bg-background p-8 overflow-y-auto">
                           {/* Church & Branch Info + Service Card - Fullscreen Header */}
                           <div className="bg-[#1A1A20] rounded-lg p-6 space-y-4 mb-6">
-                            {/* Header with Attendance Management on left and Church abbreviation + Campus badge on right */}
+                            {/* Header with Attendance Management on left and Church acronym + Campus badge on right */}
                             <div className="flex items-center justify-between">
-                              <h1 className="mb-0">Attendance Management</h1>
+                              <h1 className="mb-0 text-2xl font-light">Attendance Management</h1>
                               <div className="flex items-center gap-2">
                                 <span className="text-lg">TOBC</span>
                                 <Badge 
@@ -644,85 +701,87 @@ export default function App() {
                   </TabsContent>
 
                   <TabsContent value="checkin">
-                    <AttendanceTracker
-                      services={mockServices}
-                      members={mockMembers}
-                      attendanceRecords={attendanceRecords}
-                      onCheckIn={handleCheckIn}
-                      onBulkCheckIn={handleBulkCheckIn}
-                      selectedServiceId={selectedServiceId}
-                      onSelectService={handleSelectService}
-                    />
+                    <div className="space-y-6">
+                      <PageHeader
+                        title="Manual Check-In"
+                        description="Record attendance manually for services"
+                      />
+                      <AttendanceTracker
+                        services={mockServices}
+                        members={mockMembers}
+                        attendanceRecords={attendanceRecords}
+                        onCheckIn={handleCheckIn}
+                        onBulkCheckIn={handleBulkCheckIn}
+                        selectedServiceId={selectedServiceId}
+                        onSelectService={handleSelectService}
+                      />
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="history">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Attendance History</CardTitle>
-                        <p className="text-sm text-muted-foreground">
-                          View historical attendance records
-                        </p>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-center py-12">
-                          <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                          <p className="text-sm text-muted-foreground">
-                            Attendance history view coming soon
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <div className="space-y-6">
+                      <PageHeader
+                        title="Attendance History"
+                        description="View historical attendance records"
+                      />
+                      <Card>
+                        <CardContent>
+                          <div className="text-center py-12">
+                            <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                            <p className="text-sm text-muted-foreground">
+                              Attendance history view coming soon
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="reports">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Attendance Reports</CardTitle>
-                        <p className="text-sm text-muted-foreground">
-                          Generate attendance reports and analytics
-                        </p>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-center py-12">
-                          <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                          <p className="text-sm text-muted-foreground">
-                            Attendance reports coming soon
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <div className="space-y-6">
+                      <PageHeader
+                        title="Attendance Reports"
+                        description="Generate attendance reports and analytics"
+                      />
+                      <Card>
+                        <CardContent>
+                          <div className="text-center py-12">
+                            <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                            <p className="text-sm text-muted-foreground">
+                              Attendance reports coming soon
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
                   </TabsContent>
                 </Tabs>
               </TabsContent>
 
               {/* Services Tab */}
               <TabsContent value="services" className="mt-6">
-                <ServiceManager
-                  services={mockChurchServices}
-                  onCreateService={(service) => console.log('Create service:', service)}
-                  onUpdateService={(id, service) => console.log('Update service:', id, service)}
-                  onDeleteService={(id) => console.log('Delete service:', id)}
-                  onDuplicateService={(service) => console.log('Duplicate service:', service)}
+                <ServicesPage
+                  services={services}
+                  onServiceCreate={handleCreateService}
+                  onServiceUpdate={handleUpdateService}
+                  onServiceDelete={handleDeleteService}
+                  organizationId="org1"
+                  branches={branchesArray}
+                  currentUserId="demo_user"
                 />
               </TabsContent>
 
               {/* Events Tab */}
-              <TabsContent value="events" className="mt-6">
-                <Tabs defaultValue="management">
-                  <TabsList className="mb-6">
-                    <TabsTrigger value="management" className="gap-2">
-                      <Settings className="h-4 w-4" />
-                      Event Management
-                    </TabsTrigger>
-                    <TabsTrigger value="list" className="gap-2">
-                      <Calendar className="h-4 w-4" />
-                      Event List
-                    </TabsTrigger>
-                    <TabsTrigger value="calendar" className="gap-2">
-                      <Calendar className="h-4 w-4" />
-                      Calendar
-                    </TabsTrigger>
-                  </TabsList>
+              <TabsContent value="events" className="mt-1">
+                <Tabs defaultValue="management" className="space-y-4">
+                  <SubNavigation
+                    sectionName="Events"
+                    items={[
+                      { value: 'management', label: 'Event Management' },
+                      { value: 'list', label: 'Event List' },
+                      { value: 'calendar', label: 'Calendar' },
+                    ]}
+                  />
 
                   <TabsContent value="management">
                     <EventManagement
@@ -749,21 +808,33 @@ export default function App() {
                   </TabsContent>
 
                   <TabsContent value="list">
-                    <EventList
-                      events={mockEvents}
-                      onEventView={handleEventView}
-                      onEventEdit={handleEventEdit}
-                      onEventRegister={handleEventRegister}
-                      onEventShare={handleEventShare}
-                    />
+                    <div className="space-y-6">
+                      <PageHeader
+                        title="Event List"
+                        description="Browse all upcoming and past events"
+                      />
+                      <EventList
+                        events={mockEvents}
+                        onEventView={handleEventView}
+                        onEventEdit={handleEventEdit}
+                        onEventRegister={handleEventRegister}
+                        onEventShare={handleEventShare}
+                      />
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="calendar">
-                    <EventCalendar
-                      events={mockEvents}
-                      onEventClick={handleEventView}
-                      onCreateEvent={(date) => alert(`Create event on ${date.toLocaleDateString()}`)}
-                    />
+                    <div className="space-y-6">
+                      <PageHeader
+                        title="Event Calendar"
+                        description="View events in calendar format"
+                      />
+                      <EventCalendar
+                        events={mockEvents}
+                        onEventClick={handleEventView}
+                        onCreateEvent={(date) => alert(`Create event on ${date.toLocaleDateString()}`)}
+                      />
+                    </div>
                   </TabsContent>
                 </Tabs>
               </TabsContent>
@@ -774,108 +845,131 @@ export default function App() {
               </TabsContent>
 
               {/* Organization Tab */}
-              <TabsContent value="organization" className="mt-6">
-                <OrganizationManagement />
+              <TabsContent value="organization" className="mt-1">
+                <Tabs defaultValue="overview" className="space-y-4">
+                  <SubNavigation
+                    sectionName="Organisation"
+                    items={[
+                      { value: 'overview', label: 'Overview' },
+                      { value: 'locations', label: 'Locations' },
+                      { value: 'settings', label: 'Settings' },
+                    ]}
+                  />
+                  
+                  <TabsContent value="overview">
+                    <OrganizationManagement />
+                  </TabsContent>
+                  
+                  <TabsContent value="locations">
+                    <div className="space-y-6">
+                      <LocationManager
+                        locations={locations}
+                        onCreateLocation={handleCreateLocation}
+                        onUpdateLocation={handleUpdateLocation}
+                        onDeleteLocation={handleDeleteLocation}
+                      />
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="settings">
+                    <div className="space-y-6">
+                      <PageHeader
+                        title="Organisation Settings"
+                        description="Configure your organisation settings"
+                      />
+                      <Card>
+                        <CardContent className="pt-6 text-center py-12">
+                          <Settings className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                          <p className="text-sm text-muted-foreground">
+                            Organisation settings coming soon
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
 
               {/* Giving Tab */}
               <TabsContent value="giving" className="mt-1">
                 <Tabs defaultValue="dashboard" className="space-y-4">
-                  <TabsList className="bg-transparent border-0 justify-start h-auto p-0 gap-0" style={{ marginLeft: '2.25em' }}>
-                    <div className="flex items-center gap-2">
-                      <Badge 
-                        variant="default" 
-                        className="pointer-events-none px-2 py-0.5 uppercase"
-                        style={{
-                          background: '#1b4332',
-                          fontWeight: 100,
-                          borderRadius: '2px',
-                          fontSize: '10px'
-                        }}
-                      >
-                        Giving
-                      </Badge>
-                      <ChevronRight className="h-3 w-3 text-muted-foreground" />
-                    </div>
-                    <TabsTrigger 
-                      value="dashboard"
-                      onClick={() => setShowDonationForm(false)}
-                      className="data-[state=active]:bg-transparent data-[state=inactive]:bg-transparent border-0 data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground px-2 pr-2 pl-2 font-light data-[state=active]:shadow-none rounded-sm h-auto py-0.5"
-                      style={{ fontSize: '0.8125rem' }}
-                    >
-                      Dashboard
-                    </TabsTrigger>
-                    <span className="text-[#1CE479] px-1.5 leading-none self-center" style={{ fontSize: '0.8125rem' }}>|</span>
-                    <TabsTrigger 
-                      value="record"
-                      onClick={() => setShowDonationForm(true)}
-                      className="data-[state=active]:bg-transparent data-[state=inactive]:bg-transparent border-0 data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground px-2 pr-2 font-light data-[state=active]:shadow-none rounded-sm h-auto py-0.5"
-                      style={{ fontSize: '0.8125rem' }}
-                    >
-                      Record Donation
-                    </TabsTrigger>
-                    <span className="text-[#1CE479] px-1.5 leading-none self-center" style={{ fontSize: '0.8125rem' }}>|</span>
-                    <TabsTrigger 
-                      value="campaigns"
-                      onClick={() => setShowCampaignManager(true)}
-                      className="data-[state=active]:bg-transparent data-[state=inactive]:bg-transparent border-0 data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground px-2 pr-2 font-light data-[state=active]:shadow-none rounded-sm h-auto py-0.5"
-                      style={{ fontSize: '0.8125rem' }}
-                    >
-                      Campaigns
-                    </TabsTrigger>
-                    <span className="text-[#1CE479] px-1.5 leading-none self-center" style={{ fontSize: '0.8125rem' }}>|</span>
-                    <TabsTrigger 
-                      value="reports" 
-                      className="data-[state=active]:bg-transparent data-[state=inactive]:bg-transparent border-0 data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground px-2 font-light data-[state=active]:shadow-none rounded-sm h-auto py-0.5"
-                      style={{ fontSize: '0.8125rem' }}
-                    >
-                      Reports
-                    </TabsTrigger>
-                  </TabsList>
+                  <SubNavigation
+                    sectionName="Giving"
+                    items={[
+                      { value: 'dashboard', label: 'Dashboard' },
+                      { value: 'record', label: 'Record Donation' },
+                      { value: 'campaigns', label: 'Campaigns' },
+                      { value: 'reports', label: 'Reports' },
+                    ]}
+                  />
 
                   <TabsContent value="dashboard">
-                    <GivingDashboard
-                      stats={mockGivingStats}
-                      trends={mockGivingTrends}
-                      recentDonations={donations}
-                      onRecordDonation={() => {
-                        setShowDonationForm(true);
-                        setActiveTab('giving');
-                      }}
-                      onViewReports={() => {
-                        // Switch to reports tab (within giving tab)
-                        const reportsTab = document.querySelector('[value="reports"]') as HTMLButtonElement;
-                        if (reportsTab) reportsTab.click();
-                      }}
-                    />
+                    <div className="space-y-6">
+                      <PageHeader
+                        title="Giving Dashboard"
+                        description="Overview of donations and giving trends"
+                      />
+                      <GivingDashboard
+                        stats={mockGivingStats}
+                        trends={mockGivingTrends}
+                        recentDonations={donations}
+                        onRecordDonation={() => {
+                          setShowDonationForm(true);
+                          setActiveTab('giving');
+                        }}
+                        onViewReports={() => {
+                          // Switch to reports tab (within giving tab)
+                          const reportsTab = document.querySelector('[value="reports"]') as HTMLButtonElement;
+                          if (reportsTab) reportsTab.click();
+                        }}
+                      />
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="record">
-                    <DonationForm
-                      donors={mockDonors}
-                      onSubmit={handleRecordDonation}
-                      onCancel={() => setShowDonationForm(false)}
-                      isOffline={!navigator.onLine}
-                    />
+                    <div className="space-y-6">
+                      <PageHeader
+                        title="Record Donation"
+                        description="Record a new donation or offering"
+                      />
+                      <DonationForm
+                        donors={mockDonors}
+                        onSubmit={handleRecordDonation}
+                        onCancel={() => setShowDonationForm(false)}
+                        isOffline={!navigator.onLine}
+                      />
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="campaigns">
-                    <CampaignManager
-                      campaigns={mockCampaigns}
-                      onCreateCampaign={() => alert('Campaign creation form coming soon')}
-                      onEditCampaign={(campaign) => alert(`Edit campaign: ${campaign.name}`)}
-                      onDeleteCampaign={(id) => {
-                        if (confirm('Delete this campaign?')) {
-                          console.log('Delete campaign:', id);
-                        }
-                      }}
-                      onViewDetails={(campaign) => alert(`View details: ${campaign.name}`)}
-                    />
+                    <div className="space-y-6">
+                      <PageHeader
+                        title="Giving Campaigns"
+                        description="Manage fundraising campaigns and initiatives"
+                      />
+                      <CampaignManager
+                        campaigns={mockCampaigns}
+                        onCreateCampaign={() => alert('Campaign creation form coming soon')}
+                        onEditCampaign={(campaign) => alert(`Edit campaign: ${campaign.name}`)}
+                        onDeleteCampaign={(id) => {
+                          if (confirm('Delete this campaign?')) {
+                            console.log('Delete campaign:', id);
+                          }
+                        }}
+                        onViewDetails={(campaign) => alert(`View details: ${campaign.name}`)}
+                      />
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="reports">
                     {!currentReport ? (
-                      <ReportsHub onSelectReport={(reportId) => setCurrentReport(reportId as ReportType)} />
+                      <>
+                        <PageHeader
+                          title="Giving Reports"
+                          description="Generate and view giving reports"
+                        />
+                        <ReportsHub onSelectReport={(reportId) => setCurrentReport(reportId as ReportType)} />
+                      </>
                     ) : currentReport === 'giving_summary' ? (
                       <GivingReports
                         report={mockGivingSummaryReport}
@@ -940,38 +1034,54 @@ export default function App() {
                     onBack={() => setCurrentAnalyticsModule(null)}
                   />
                 ) : currentAnalyticsModule === 'giving' ? (
-                  <div className="text-center py-12">
-                    <p className="text-muted-foreground mb-2">
-                      Giving analytics are available in the Giving → Reports section
-                    </p>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setActiveTab('giving');
-                        setCurrentAnalyticsModule(null);
-                      }}
-                    >
-                      Go to Giving Reports
-                    </Button>
-                  </div>
+                  <>
+                    <PageHeader
+                      title="Giving Analytics"
+                      description="Analytics for giving and donations"
+                    />
+                    <div className="text-center py-12">
+                      <p className="text-muted-foreground mb-2">
+                        Giving analytics are available in the Giving → Reports section
+                      </p>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setActiveTab('giving');
+                          setCurrentAnalyticsModule(null);
+                        }}
+                      >
+                        Go to Giving Reports
+                      </Button>
+                    </div>
+                  </>
                 ) : (
-                  <div className="text-center py-12">
-                    <p className="text-muted-foreground">
-                      This analytics module is coming soon
-                    </p>
-                    <Button
-                      variant="outline"
-                      className="mt-4"
-                      onClick={() => setCurrentAnalyticsModule(null)}
-                    >
-                      ← Back to Analytics Hub
-                    </Button>
-                  </div>
+                  <>
+                    <PageHeader
+                      title="Analytics Module"
+                      description="View detailed analytics for your church"
+                    />
+                    <div className="text-center py-12">
+                      <p className="text-muted-foreground">
+                        This analytics module is coming soon
+                      </p>
+                      <Button
+                        variant="outline"
+                        className="mt-4"
+                        onClick={() => setCurrentAnalyticsModule(null)}
+                      >
+                        ← Back to Analytics Hub
+                      </Button>
+                    </div>
+                  </>
                 )}
               </TabsContent>
 
               {/* AI Intelligence Tab */}
               <TabsContent value="ai" className="mt-6">
+                <PageHeader
+                  title="AI Intelligence"
+                  description="AI-powered insights and predictions for your church"
+                />
                 <AIDashboard
                   insights={mockAIInsights}
                   churnPredictions={mockChurnPredictions}
@@ -1044,59 +1154,49 @@ export default function App() {
         );
   };
 
-  // Render auth page differently
-  if (currentPage === 'auth' && !demoMode) {
+  // PUBLIC PAGES: Landing and Auth (like chms.com, chms.com/login)
+  // These pages have NO layout, NO sidebars, NO app chrome
+  if (isPublicPage && !demoMode) {
     return (
       <ThemeProvider>
         <AuthProvider>
-          {renderPageContent()}
-          <DevNavigation 
-            currentPage={currentPage} 
-            onNavigate={setCurrentPage}
-            demoMode={demoMode}
-            onToggleDemoMode={() => setDemoMode(!demoMode)}
-          />
+          <UserProvider>
+            {renderPageContent()}
+            {/* DevNavigation only shown on public pages in prototype for easy navigation */}
+            {/* In production, this would not exist on public pages */}
+            <DevNavigation 
+              currentPage={currentPage} 
+              onNavigate={setCurrentPage}
+              demoMode={demoMode}
+              onToggleDemoMode={() => setDemoMode(!demoMode)}
+            />
+          </UserProvider>
         </AuthProvider>
       </ThemeProvider>
     );
   }
 
-  // Demo mode or authenticated view
+  // APP PAGES: Dashboard, Members, etc. (like app.chms.com/*)
+  // These pages have full AppLayout with sidebars and navigation
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <OrganizationProvider>
-          {demoMode ? (
-            // Demo mode - no auth required
-            <AppLayout 
-              showSecondarySidebar={true}
-              onNavigate={handleSidebarNavigation}
-              currentPath={currentRoute}
-            >
-              {renderPageContent()}
-            </AppLayout>
-          ) : (
-            // Protected mode - auth required
-            <ProtectedRoute>
-              <AppLayout 
-                showSecondarySidebar={true}
-                onNavigate={handleSidebarNavigation}
-                currentPath={currentRoute}
-              >
-                {renderPageContent()}
-              </AppLayout>
-            </ProtectedRoute>
-          )}
-          
-          {/* Developer Navigation - Outside ProtectedRoute so it's always visible */}
-          <DevNavigation 
-            currentPage={currentPage} 
-            onNavigate={setCurrentPage}
-            demoMode={demoMode}
-            onToggleDemoMode={() => setDemoMode(!demoMode)}
-          />
-        </OrganizationProvider>
-      </AuthProvider>
+      {/* Design prototype - always runs in demo mode, no auth required */}
+      <AppLayout 
+        showSecondarySidebar={true}
+        onNavigate={handleSidebarNavigation}
+        currentPath={currentRoute}
+      >
+        {renderPageContent()}
+      </AppLayout>
+      
+      {/* Developer Navigation - Prototype tool for easy page switching */}
+      {/* In production, this would not exist */}
+      <DevNavigation 
+        currentPage={currentPage} 
+        onNavigate={setCurrentPage}
+        demoMode={demoMode}
+        onToggleDemoMode={() => setDemoMode(!demoMode)}
+      />
     </ThemeProvider>
   );
 }

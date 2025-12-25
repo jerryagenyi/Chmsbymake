@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../ui/alert-dialog';
-import { useOrganization, Branch } from '../../contexts/OrganizationContext';
+import { useOrganization, Campus } from '../../contexts/OrganizationContext';
 import {
   Building2,
   MapPin,
@@ -45,15 +45,15 @@ import {
 } from 'lucide-react';
 
 export function OrganizationSettings() {
-  const { organization, updateOrganization, updateBranch, addBranch, removeBranch } = useOrganization();
+  const { organization, updateOrganization, updateCampus, addCampus, removeCampus } = useOrganization();
   const [editMode, setEditMode] = useState(false);
-  const [branchToDelete, setBranchToDelete] = useState<string | null>(null);
+  const [campusToDelete, setCampusToDelete] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
     name: organization.name,
-    abbreviation: organization.abbreviation,
+    acronym: organization.acronym,
     mission: organization.mission,
     vision: organization.vision || '',
     website: organization.website || '',
@@ -68,7 +68,7 @@ export function OrganizationSettings() {
   const handleSave = () => {
     updateOrganization({
       name: formData.name,
-      abbreviation: formData.abbreviation,
+      acronym: formData.acronym,
       mission: formData.mission,
       vision: formData.vision,
       website: formData.website,
@@ -89,7 +89,7 @@ export function OrganizationSettings() {
   const handleCancel = () => {
     setFormData({
       name: organization.name,
-      abbreviation: organization.abbreviation,
+      acronym: organization.acronym,
       mission: organization.mission,
       vision: organization.vision || '',
       website: organization.website || '',
@@ -103,9 +103,9 @@ export function OrganizationSettings() {
     setEditMode(false);
   };
 
-  const handleDeleteBranch = (branchId: string) => {
-    removeBranch(branchId);
-    setBranchToDelete(null);
+  const handleDeleteCampus = (campusId: string) => {
+    removeCampus(campusId);
+    setCampusToDelete(null);
   };
 
   return (
@@ -113,9 +113,9 @@ export function OrganizationSettings() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="mb-2">Organisation Settings</h1>
+          <h1 className="text-2xl font-light mb-2">Organisation Settings</h1>
           <p className="text-sm text-muted-foreground">
-            Manage your church branding, mission, and branch locations
+            Manage your church branding, mission, and campus locations
           </p>
         </div>
         {showSuccess && (
@@ -138,7 +138,7 @@ export function OrganizationSettings() {
           </TabsTrigger>
           <TabsTrigger value="branches" className="gap-2">
             <MapPin className="h-4 w-4" />
-            Branches
+            Campuses
           </TabsTrigger>
           <TabsTrigger value="contact" className="gap-2">
             <Globe className="h-4 w-4" />
@@ -158,13 +158,13 @@ export function OrganizationSettings() {
             <CardContent className="space-y-6">
               {/* Church Name */}
               <div className="space-y-2">
-                <Label htmlFor="name">Organisation Name *</Label>
+                <Label htmlFor="organizationName">Organisation Name *</Label>
                 <Input
-                  id="name"
+                  id="organizationName"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   disabled={!editMode}
-                  placeholder="The OliveBrook Church, Abuja"
+                  placeholder="Victory Chapel Ministry"
                 />
                 <p className="text-xs text-muted-foreground">
                   Full legal or official name of your church
@@ -173,13 +173,13 @@ export function OrganizationSettings() {
 
               {/* Abbreviation */}
               <div className="space-y-2">
-                <Label htmlFor="abbreviation">Abbreviation *</Label>
+                <Label htmlFor="acronym">Acronym *</Label>
                 <Input
-                  id="abbreviation"
-                  value={formData.abbreviation}
-                  onChange={(e) => setFormData({ ...formData, abbreviation: e.target.value })}
+                  id="acronym"
+                  value={formData.acronym}
+                  onChange={(e) => setFormData({ ...formData, acronym: e.target.value })}
                   disabled={!editMode}
-                  placeholder="TOBC"
+                  placeholder="VCM"
                   className="max-w-xs"
                 />
                 <p className="text-xs text-muted-foreground">
@@ -256,8 +256,8 @@ export function OrganizationSettings() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Logo */}
-              <div className="space-y-3">
+              {/* Logo Upload */}
+              <div className="space-y-4">
                 <Label className="flex items-center gap-2">
                   <ImageIcon className="h-4 w-4" />
                   Church Logo
@@ -282,49 +282,100 @@ export function OrganizationSettings() {
                 </div>
               </div>
 
+              {/* Brand Colours section removed - will be added in future when AI customisation or organisation-managed UI tokens are implemented */}
+
               <Separator />
 
-              {/* Brand Colours */}
+              {/* Contact Information */}
               <div className="space-y-4">
-                <Label className="flex items-center gap-2">
-                  <Palette className="h-4 w-4" />
-                  Brand Colours
-                </Label>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="primaryColor" className="text-sm">Primary Colour</Label>
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="h-10 w-10 rounded border border-border"
-                        style={{ backgroundColor: organization.primaryColor }}
-                      />
-                      <Input
-                        id="primaryColor"
-                        value={organization.primaryColor}
-                        disabled
-                        className="font-mono text-sm"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="accentColor" className="text-sm">Accent Colour</Label>
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="h-10 w-10 rounded border border-border"
-                        style={{ backgroundColor: organization.accentColor }}
-                      />
-                      <Input
-                        id="accentColor"
-                        value={organization.accentColor}
-                        disabled
-                        className="font-mono text-sm"
-                      />
-                    </div>
+                <Label>Social Media</Label>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="facebook" className="flex items-center gap-2 text-sm">
+                    <Facebook className="h-4 w-4" />
+                    Facebook
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">facebook.com/</span>
+                    <Input
+                      id="facebook"
+                      value={formData.facebook}
+                      onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
+                      disabled={!editMode}
+                      placeholder="victorychapel"
+                    />
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Colour customisation coming soon
-                </p>
+
+                <div className="space-y-2">
+                  <Label htmlFor="instagram" className="flex items-center gap-2 text-sm">
+                    <Instagram className="h-4 w-4" />
+                    Instagram
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">instagram.com/</span>
+                    <Input
+                      id="instagram"
+                      value={formData.instagram}
+                      onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                      disabled={!editMode}
+                      placeholder="victorychapel"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="twitter" className="flex items-center gap-2 text-sm">
+                    <Twitter className="h-4 w-4" />
+                    Twitter/X
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">twitter.com/</span>
+                    <Input
+                      id="twitter"
+                      value={formData.twitter}
+                      onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
+                      disabled={!editMode}
+                      placeholder="victorychapel"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="youtube" className="flex items-center gap-2 text-sm">
+                    <Youtube className="h-4 w-4" />
+                    YouTube
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">youtube.com/</span>
+                    <Input
+                      id="youtube"
+                      value={formData.youtube}
+                      onChange={(e) => setFormData({ ...formData, youtube: e.target.value })}
+                      disabled={!editMode}
+                      placeholder="victorychapel"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3 pt-4">
+                {!editMode ? (
+                  <Button onClick={() => setEditMode(true)}>
+                    Edit Contact Information
+                  </Button>
+                ) : (
+                  <>
+                    <Button onClick={handleSave} className="gap-2">
+                      <Save className="h-4 w-4" />
+                      Save Changes
+                    </Button>
+                    <Button variant="outline" onClick={handleCancel}>
+                      Cancel
+                    </Button>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -334,26 +385,26 @@ export function OrganizationSettings() {
         <TabsContent value="branches" className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold mb-1">Branch Locations</h3>
+              <h3 className="font-semibold mb-1">Campus Locations</h3>
               <p className="text-sm text-muted-foreground">
                 Manage your church campuses and meeting locations
               </p>
             </div>
             <Button className="gap-2">
               <Plus className="h-4 w-4" />
-              Add Branch
+              Add Campus
             </Button>
           </div>
 
           <div className="grid gap-4">
-            {organization.branches.map((branch) => (
-              <Card key={branch.id}>
+            {organization.campuses.map((campus) => (
+              <Card key={campus.id}>
                 <CardContent className="pt-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h4 className="font-semibold">{branch.name}</h4>
-                        {branch.isHeadquarters && (
+                        <h4 className="font-semibold">{campus.name}</h4>
+                        {campus.isHeadquarters && (
                           <Badge variant="default" className="gap-1">
                             <Crown className="h-3 w-3" />
                             Headquarters
@@ -363,24 +414,24 @@ export function OrganizationSettings() {
                       <div className="space-y-1.5 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <MapPin className="h-3.5 w-3.5" />
-                          <span>{branch.address}, {branch.city}, {branch.country}</span>
+                          <span>{campus.address}, {campus.city}, {campus.country}</span>
                         </div>
-                        {branch.contactEmail && (
+                        {campus.contactEmail && (
                           <div className="flex items-center gap-2">
                             <Mail className="h-3.5 w-3.5" />
-                            <span>{branch.contactEmail}</span>
+                            <span>{campus.contactEmail}</span>
                           </div>
                         )}
-                        {branch.contactPhone && (
+                        {campus.contactPhone && (
                           <div className="flex items-center gap-2">
                             <Phone className="h-3.5 w-3.5" />
-                            <span>{branch.contactPhone}</span>
+                            <span>{campus.contactPhone}</span>
                           </div>
                         )}
-                        {branch.capacity && (
+                        {campus.capacity && (
                           <div className="flex items-center gap-2">
                             <Building2 className="h-3.5 w-3.5" />
-                            <span>Capacity: {branch.capacity} people</span>
+                            <span>Capacity: {campus.capacity} people</span>
                           </div>
                         )}
                       </div>
@@ -389,11 +440,11 @@ export function OrganizationSettings() {
                       <Button variant="outline" size="sm">
                         Edit
                       </Button>
-                      {!branch.isHeadquarters && (
+                      {!campus.isHeadquarters && (
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setBranchToDelete(branch.id)}
+                          onClick={() => setCampusToDelete(campus.id)}
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
@@ -428,7 +479,7 @@ export function OrganizationSettings() {
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                   disabled={!editMode}
-                  placeholder="https://olivebrookchurch.org"
+                  placeholder="https://victorychapel.org"
                 />
               </div>
 
@@ -444,7 +495,7 @@ export function OrganizationSettings() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   disabled={!editMode}
-                  placeholder="info@olivebrookchurch.org"
+                  placeholder="info@victorychapel.org"
                 />
               </div>
 
@@ -482,7 +533,7 @@ export function OrganizationSettings() {
                       value={formData.facebook}
                       onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
                       disabled={!editMode}
-                      placeholder="olivebrookchurch"
+                      placeholder="victorychapel"
                     />
                   </div>
                 </div>
@@ -499,7 +550,7 @@ export function OrganizationSettings() {
                       value={formData.instagram}
                       onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
                       disabled={!editMode}
-                      placeholder="olivebrookchurch"
+                      placeholder="victorychapel"
                     />
                   </div>
                 </div>
@@ -516,7 +567,7 @@ export function OrganizationSettings() {
                       value={formData.twitter}
                       onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
                       disabled={!editMode}
-                      placeholder="olivebrookchurch"
+                      placeholder="victorychapel"
                     />
                   </div>
                 </div>
@@ -533,7 +584,7 @@ export function OrganizationSettings() {
                       value={formData.youtube}
                       onChange={(e) => setFormData({ ...formData, youtube: e.target.value })}
                       disabled={!editMode}
-                      placeholder="olivebrookchurch"
+                      placeholder="victorychapel"
                     />
                   </div>
                 </div>
@@ -562,22 +613,22 @@ export function OrganizationSettings() {
         </TabsContent>
       </Tabs>
 
-      {/* Delete Branch Confirmation Dialog */}
-      <AlertDialog open={!!branchToDelete} onOpenChange={() => setBranchToDelete(null)}>
+      {/* Delete Campus Confirmation Dialog */}
+      <AlertDialog open={!!campusToDelete} onOpenChange={() => setCampusToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Branch Location?</AlertDialogTitle>
+            <AlertDialogTitle>Delete Campus Location?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this branch location. All associated data will remain but will need to be reassigned to another branch.
+              This will permanently delete this campus location. All associated data will remain but will need to be reassigned to another campus.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => branchToDelete && handleDeleteBranch(branchToDelete)}
+              onClick={() => campusToDelete && handleDeleteCampus(campusToDelete)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete Branch
+              Delete Campus
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

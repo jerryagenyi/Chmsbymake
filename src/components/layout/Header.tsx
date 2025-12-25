@@ -19,7 +19,6 @@ import {
 } from '../ui/dropdown-menu';
 import { ThemeToggle } from '../theme/ThemeToggle';
 import { useIsMobile } from '../ui/use-mobile';
-import { useAuth } from '../../contexts/AuthContext';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -34,22 +33,17 @@ export function Header({ onToggleSidebar, onToggleSecondarySidebar }: HeaderProp
   const notificationCount = 3;
   const messageCount = 5;
 
-  // Get user from auth context
-  const { profile, signOut } = useAuth();
-  
-  const user = profile || {
+  // Mock user data for design prototype
+  const user = {
     name: 'Pastor John',
-    email: 'pastor@church.com',
-    church_name: 'ChurchAfrica Lagos',
+    email: 'pastor@victorychapel.org',
+    church_name: 'Victory Chapel Ministry',
     avatar_url: '',
   };
   
   const handleSignOut = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error('Sign out failed:', error);
-    }
+    // Design prototype - no real sign out
+    console.log('Sign out clicked (design prototype)');
   };
 
   return (
@@ -127,7 +121,19 @@ export function Header({ onToggleSidebar, onToggleSecondarySidebar }: HeaderProp
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+              <div className="flex items-center justify-between px-2 py-2">
+                <DropdownMenuLabel className="p-0">Notifications</DropdownMenuLabel>
+                {notificationCount > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => console.log('Clear all notifications')}
+                    className="h-7 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    Clear All
+                  </Button>
+                )}
+              </div>
               <DropdownMenuSeparator />
               <div className="max-h-[300px] overflow-y-auto">
                 <NotificationItem

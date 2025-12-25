@@ -47,6 +47,7 @@ import { ServiceForm } from './ServiceForm';
 import { ServiceList } from './ServiceList';
 import { ServiceCalendar } from './ServiceCalendar';
 import { cn } from '../ui/utils';
+import { PageHeader, StatCard } from '../layout/PageHeader';
 
 interface ServiceManagerProps {
   services?: Service[];
@@ -111,24 +112,63 @@ export function ServiceManager({
     setEditingService(null);
   };
 
+  // Calculate stats for this week
+  const thisWeekServices = services.filter(s => {
+    const serviceDate = new Date(s.scheduledDate);
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    return serviceDate >= weekStart && serviceDate <= weekEnd;
+  }).length;
+
+  // Prepare stats for PageHeader
+  const statCards: StatCard[] = [
+    {
+      label: 'Total Services',
+      value: services.length,
+      icon: Calendar,
+    },
+    {
+      label: 'Active Today',
+      value: todayServices.length,
+      icon: Play,
+      iconColor: 'text-[#1CE479]',
+      valueColor: 'text-[#1CE479]',
+    },
+    {
+      label: 'This Week',
+      value: thisWeekServices,
+      icon: Clock,
+      iconColor: 'text-blue-400',
+      valueColor: 'text-blue-400',
+    },
+    {
+      label: 'Weekly Services',
+      value: services.filter(s => s.frequency === 'weekly').length,
+      icon: Calendar,
+      iconColor: 'text-purple-400',
+      valueColor: 'text-purple-400',
+    },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Service Management</h2>
-          <p className="text-muted-foreground">
-            Manage church services, schedules, and attendance tracking
-          </p>
-        </div>
-        <Button 
-          onClick={() => setShowCreateForm(true)}
-          className="bg-[#1CE479] hover:bg-[#1CE479]/90 text-[#0A0A0F]"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Create Service
-        </Button>
-      </div>
+      <PageHeader
+        title="Service Management"
+        description="Manage church services, schedules, and attendance tracking"
+        stats={statCards}
+        action={
+          <Button 
+            onClick={() => setShowCreateForm(true)}
+            className="bg-[#1CE479] hover:bg-[#1CE479]/90 text-[#0A0A0F]"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Service
+          </Button>
+        }
+      />
 
       {/* Active Services Alert */}
       {activeServices.length > 0 && (
@@ -253,68 +293,6 @@ export function ServiceManager({
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Services</p>
-                <p className="text-2xl font-bold">{services.length}</p>
-              </div>
-              <Calendar className="h-8 w-8 text-muted-foreground" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Active Today</p>
-                <p className="text-2xl font-bold">{todayServices.length}</p>
-              </div>
-              <Play className="h-8 w-8 text-[#1CE479]" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">This Week</p>
-                <p className="text-2xl font-bold">
-                  {services.filter(s => {
-                    const serviceDate = new Date(s.scheduledDate);
-                    const weekStart = new Date();
-                    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-                    const weekEnd = new Date(weekStart);
-                    weekEnd.setDate(weekEnd.getDate() + 6);
-                    return serviceDate >= weekStart && serviceDate <= weekEnd;
-                  }).length}
-                </p>
-              </div>
-              <Clock className="h-8 w-8 text-blue-400" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Weekly Services</p>
-                <p className="text-2xl font-bold">
-                  {services.filter(s => s.frequency === 'weekly').length}
-                </p>
-              </div>
-              <Calendar className="h-8 w-8 text-purple-400" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }

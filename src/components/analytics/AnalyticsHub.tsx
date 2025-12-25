@@ -18,6 +18,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
+import { PageHeader, StatCard } from '../layout/PageHeader';
 import type { AnalyticsModule } from '../../types/analytics';
 
 interface AnalyticsCard {
@@ -132,55 +133,46 @@ export function AnalyticsHub({ onSelectModule }: AnalyticsHubProps) {
     return 'text-red-400';
   };
 
+  // Prepare stats for PageHeader
+  const statCards: StatCard[] = [
+    {
+      label: 'Total Members',
+      value: 342,
+      icon: Users,
+      iconColor: 'text-primary',
+      valueColor: 'text-primary',
+    },
+    {
+      label: 'Avg Attendance',
+      value: 110,
+      icon: Activity,
+      iconColor: 'text-blue-400',
+      valueColor: 'text-blue-400',
+    },
+    {
+      label: 'Engagement Score',
+      value: 72.5,
+      icon: Heart,
+      iconColor: 'text-pink-400',
+      valueColor: 'text-pink-400',
+    },
+    {
+      label: 'Health Score',
+      value: 78.5,
+      icon: TrendingUp,
+      iconColor: 'text-green-400',
+      valueColor: 'text-green-400',
+    },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl mb-1">Church Analytics</h1>
-        <p className="text-sm text-muted-foreground">
-          Comprehensive analytics across membership, attendance, engagement, and church health
-        </p>
-      </div>
-
-      {/* Quick Overview */}
-      <Card className="bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <p className="text-2xl font-bold mb-1">342</p>
-              <p className="text-xs text-muted-foreground">Total Members</p>
-              <Badge variant="outline" className="mt-1 text-xs">
-                <ArrowUp className="h-3 w-3 mr-1" />
-                +16.3%
-              </Badge>
-            </div>
-            <div>
-              <p className="text-2xl font-bold mb-1">110</p>
-              <p className="text-xs text-muted-foreground">Avg Attendance</p>
-              <Badge variant="outline" className="mt-1 text-xs">
-                <ArrowUp className="h-3 w-3 mr-1" />
-                +12.8%
-              </Badge>
-            </div>
-            <div>
-              <p className="text-2xl font-bold mb-1">72.5</p>
-              <p className="text-xs text-muted-foreground">Engagement Score</p>
-              <Badge variant="outline" className="mt-1 text-xs">
-                <ArrowUp className="h-3 w-3 mr-1" />
-                +6.0%
-              </Badge>
-            </div>
-            <div>
-              <p className="text-2xl font-bold mb-1">78.5</p>
-              <p className="text-xs text-muted-foreground">Health Score</p>
-              <Badge variant="outline" className="mt-1 text-xs">
-                <ArrowUp className="h-3 w-3 mr-1" />
-                +4.2%
-              </Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <PageHeader
+        title="Church Analytics"
+        description="Comprehensive analytics across membership, attendance, engagement, and church health"
+        stats={statCards}
+      />
 
       {/* Analytics Modules */}
       <div>

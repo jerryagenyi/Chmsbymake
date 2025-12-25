@@ -37,6 +37,8 @@ import { DetachableQRCode } from './DetachableQRCode';
 import { CheckInToast, CheckInNotification } from './CheckInToast';
 import { Checkbox } from '../ui/checkbox';
 import QRCode from 'react-qr-code';
+import { useOrganization } from '../../contexts/OrganizationContext';
+import { ChurchLogo } from '../organization/ChurchLogo';
 
 interface CheckInKioskProps {
   service: Service;
@@ -181,6 +183,8 @@ export function CheckInKiosk({
       timestamp: new Date().toISOString(),
     });
   }, [service]);
+
+  const { organization } = useOrganization();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

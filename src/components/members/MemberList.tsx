@@ -27,6 +27,7 @@ import { AddMemberForm } from './AddMemberForm';
 import { ImportExportDialog } from './ImportExportDialog';
 import { BulkActionsBar } from './BulkActionsBar';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
+import { PageHeader } from '../layout/PageHeader';
 
 type ViewMode = 'grid' | 'table';
 
@@ -195,10 +196,34 @@ export function MemberList({
   return (
     <div className="space-y-6">
       {/* Header with Actions */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2>Members</h2>
-          <div className="flex items-center gap-2 mt-1">
+      <PageHeader
+        title="Members"
+        action={
+          <div className="flex items-center gap-2">
+            {onImport && (
+              <Button variant="outline" onClick={() => setShowImportDialog(true)} className="gap-2">
+                <Upload className="h-4 w-4" />
+                Import
+              </Button>
+            )}
+            {onExport && (
+              <Button variant="outline" onClick={() => setShowExportDialog(true)} className="gap-2">
+                <Download className="h-4 w-4" />
+                Export
+              </Button>
+            )}
+            {onAddMember && (
+              <Button onClick={() => setShowAddForm(true)} className="gap-2">
+                <Plus className="h-4 w-4" />
+                Add Member
+              </Button>
+            )}
+          </div>
+        }
+      >
+        {/* Stats badges */}
+        <div className="bg-[#0F0F12] rounded-lg border border-border/50 p-4">
+          <div className="flex items-center gap-2">
             <Badge variant="secondary">{stats.total} Total</Badge>
             <Badge variant="outline" className="bg-success/10 text-success border-success/20">
               {stats.active} Active
@@ -213,28 +238,7 @@ export function MemberList({
             )}
           </div>
         </div>
-
-        <div className="flex items-center gap-2">
-          {onImport && (
-            <Button variant="outline" onClick={() => setShowImportDialog(true)} className="gap-2">
-              <Upload className="h-4 w-4" />
-              Import
-            </Button>
-          )}
-          {onExport && (
-            <Button variant="outline" onClick={() => setShowExportDialog(true)} className="gap-2">
-              <Download className="h-4 w-4" />
-              Export
-            </Button>
-          )}
-          {onAddMember && (
-            <Button onClick={() => setShowAddForm(true)} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Member
-            </Button>
-          )}
-        </div>
-      </div>
+      </PageHeader>
 
       {/* Search and View Controls */}
       <div className="flex flex-col md:flex-row items-start md:items-center gap-4">

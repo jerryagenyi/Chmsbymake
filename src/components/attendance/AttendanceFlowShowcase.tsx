@@ -163,7 +163,7 @@ export function AttendanceFlowShowcase() {
 
                 <ServiceQRGenerator
                   organizationId="org-001"
-                  branchId="branch-lagos"
+                  campusId="campus-lagos"
                   onCheckIn={(memberId, serviceId) => {
                     console.log('Check-in:', memberId, serviceId);
                   }}

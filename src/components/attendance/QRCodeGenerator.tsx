@@ -14,7 +14,8 @@ import {
   QrCode,
   Share2,
   Copy,
-  Check
+  Check,
+  RefreshCw
 } from 'lucide-react';
 import { Member } from '../../types/member';
 import { cn } from '../ui/utils';
@@ -34,12 +35,14 @@ export function QRCodeGenerator({
 }: QRCodeGeneratorProps) {
   const [copied, setCopied] = React.useState(false);
   const [qrDataUrl, setQrDataUrl] = React.useState<string>('');
+  const [refreshKey, setRefreshKey] = React.useState(0);
+  const [isGenerating, setIsGenerating] = React.useState(false);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
   const initials = `${member.firstName[0]}${member.lastName[0]}`.toUpperCase();
   const fullName = `${member.firstName} ${member.lastName}`;
 
-  // QR Code data payload
+  // QR Code data payload - includes refreshKey to force regeneration
   const qrData = React.useMemo(() => {
     return JSON.stringify({
       type: 'member-checkin',
@@ -47,14 +50,16 @@ export function QRCodeGenerator({
       name: fullName,
       membershipNumber: member.membershipNumber,
       timestamp: Date.now(),
+      refresh: refreshKey, // Include refresh key to make data unique
     });
-  }, [member.id, fullName, member.membershipNumber]);
+  }, [member.id, fullName, member.membershipNumber, refreshKey]);
 
   // Generate QR Code using canvas
   React.useEffect(() => {
     const generateQRCode = async () => {
       if (!canvasRef.current) return;
 
+      setIsGenerating(true);
       try {
         // Use qrcode library
         const QRCode = await import('qrcode');
@@ -73,11 +78,17 @@ export function QRCodeGenerator({
         setQrDataUrl(dataUrl);
       } catch (error) {
         console.error('Failed to generate QR code:', error);
+      } finally {
+        setIsGenerating(false);
       }
     };
 
     generateQRCode();
   }, [qrData, size]);
+
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+  };
 
   const handleDownload = () => {
     if (!qrDataUrl) return;
@@ -249,55 +260,72 @@ export function QRCodeGenerator({
 
         {/* Action Buttons */}
         {showActions && (
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDownload}
-              className="gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Download
-            </Button>
+          <div className="space-y-2">
+            {/* Top row: Download, Print, Share */}
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDownload}
+                className="gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Download
+              </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePrint}
-              className="gap-2"
-            >
-              <Printer className="h-4 w-4" />
-              Print
-            </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrint}
+                className="gap-2"
+              >
+                <Printer className="h-4 w-4" />
+                Print
+              </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleShare}
-              className="gap-2"
-            >
-              <Share2 className="h-4 w-4" />
-              Share
-            </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleShare}
+                className="gap-2"
+              >
+                <Share2 className="h-4 w-4" />
+                Share
+              </Button>
+            </div>
+            
+            {/* Bottom row: Copy and Refresh */}
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopy}
+                className="gap-2"
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4" />
+                    Copy Data
+                  </>
+                )}
+              </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCopy}
-              className="gap-2"
-            >
-              {copied ? (
-                <>
-                  <Check className="h-4 w-4" />
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <Copy className="h-4 w-4" />
-                  Copy Data
-                </>
-              )}
-            </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRefresh}
+                className="gap-2"
+                disabled={isGenerating}
+              >
+                <RefreshCw className={cn("h-4 w-4", isGenerating && "animate-spin")} />
+                Refresh
+              </Button>
+            </div>
           </div>
         )}
 

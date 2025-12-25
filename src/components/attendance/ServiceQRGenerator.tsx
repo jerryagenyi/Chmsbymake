@@ -24,27 +24,25 @@ import {
   RefreshCw
 } from 'lucide-react';
 
-interface ServiceQRData {
-  type: 'service-checkin';
+interface ServiceData {
   serviceId: string;
   serviceName: string;
   date: string;
   time: string;
-  branchId: string;
+  campusId: string;
   orgId: string;
   expiresAt: string;
-  timestamp: number;
 }
 
 interface ServiceQRGeneratorProps {
   organizationId: string;
-  branchId: string;
+  campusId: string;
   onCheckIn?: (memberId: string, serviceId: string) => void;
 }
 
 export const ServiceQRGenerator: React.FC<ServiceQRGeneratorProps> = ({
   organizationId,
-  branchId,
+  campusId,
   onCheckIn,
 }) => {
   const [serviceName, setServiceName] = useState('Sunday Main Service');
@@ -63,7 +61,7 @@ export const ServiceQRGenerator: React.FC<ServiceQRGeneratorProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const projectionCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const qrData = useRef<ServiceQRData | null>(null);
+  const qrData = useRef<ServiceData | null>(null);
 
   const generateServiceQR = async () => {
     // Generate unique service ID
@@ -76,16 +74,14 @@ export const ServiceQRGenerator: React.FC<ServiceQRGeneratorProps> = ({
     setExpiresAt(expiryDateTime);
 
     // Create QR data
-    const data: ServiceQRData = {
-      type: 'service-checkin',
+    const data: ServiceData = {
       serviceId: newServiceId,
       serviceName,
       date: serviceDate,
       time: serviceTime,
-      branchId,
+      campusId: campusId,
       orgId: organizationId,
       expiresAt: expiryDateTime.toISOString(),
-      timestamp: Date.now(),
     };
 
     qrData.current = data;

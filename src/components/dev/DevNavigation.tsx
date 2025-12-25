@@ -17,6 +17,7 @@ export function DevNavigation({ currentPage, onNavigate, demoMode = false, onTog
   const [open, setOpen] = useState(false);
 
   const pages = [
+    { id: 'landing', label: '🏠 Landing Page', icon: Home, color: 'text-[#1CE479]' },
     { id: 'auth', label: 'Authentication', icon: LogIn, color: 'text-blue-400' },
     { id: 'dashboard', label: 'Dashboard', icon: Home, color: 'text-green-400' },
     { id: 'members', label: 'Members', icon: Users, color: 'text-purple-400' },

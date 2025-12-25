@@ -16,118 +16,137 @@ import {
   Eye,
   Calendar,
   TrendingUp,
-  Church
+  Church,
+  ArrowLeft
 } from 'lucide-react';
-import { mockOrganization, mockBranches, mockBranchServices } from '../../lib/mock-organization-data';
+import { mockOrganization, mockCampuses, mockCampusServices } from '../../lib/mock-organization-data';
 import { OrganizationSetup } from './OrganizationSetup';
+import { OrganizationSettings } from '../settings/OrganizationSettings';
+import { PageHeader, StatCard } from '../layout/PageHeader';
 
 export function OrganizationManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSetup, setShowSetup] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   if (showSetup) {
     return <OrganizationSetup />;
   }
 
-  const filteredBranches = mockBranches.filter(branch =>
-    branch.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    branch.location.city.toLowerCase().includes(searchQuery.toLowerCase())
+  if (showSettings) {
+    return (
+      <div className="space-y-6">
+        <Button 
+          variant="ghost" 
+          onClick={() => setShowSettings(false)}
+          className="gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Organisation Management
+        </Button>
+        <OrganizationSettings />
+      </div>
+    );
+  }
+
+  const filteredCampuses = mockCampuses.filter(campus =>
+    campus.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    campus.location.city.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Prepare stats for PageHeader
+  const statCards: StatCard[] = [
+    {
+      label: 'Total Campuses',
+      value: mockCampuses.length,
+      icon: Building2,
+      iconColor: 'text-primary',
+      valueColor: 'text-primary',
+    },
+    {
+      label: 'Total Members',
+      value: mockCampuses.reduce((sum, c) => sum + c.metadata.memberCount, 0),
+      icon: Users,
+      iconColor: 'text-blue-400',
+      valueColor: 'text-blue-400',
+    },
+    {
+      label: 'Total Services',
+      value: mockCampusServices.length,
+      icon: Calendar,
+      iconColor: 'text-green-400',
+      valueColor: 'text-green-400',
+    },
+    {
+      label: 'Founded',
+      value: new Date(mockOrganization.foundedDate).getFullYear(),
+      icon: Church,
+      iconColor: 'text-purple-400',
+      valueColor: 'text-purple-400',
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="flex items-center gap-2">
-            <Building2 className="h-6 w-6" />
-            Organization Management
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            Manage your church organization, branches, and services
-          </p>
-        </div>
-        <Button onClick={() => setShowSetup(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Organization
-        </Button>
-      </div>
-
-      {/* Organization Overview */}
-      <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-lg bg-primary/20 flex items-center justify-center">
-                <Building2 className="h-8 w-8 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-xl">{mockOrganization.name}</h3>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="outline">{mockOrganization.type}</Badge>
-                  <Badge variant="secondary" className="bg-primary/20">
-                    {mockOrganization.subscription.plan}
-                  </Badge>
+      {/* Header with Stats */}
+      <PageHeader
+        title="Organisation Management"
+        description="Manage your church organisation, branches, and services"
+        stats={statCards}
+      >
+        {/* Organization Overview */}
+        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+          <CardHeader>
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <Building2 className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-xl">{mockOrganization.name}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant="outline">{mockOrganization.type}</Badge>
+                    <Badge variant="secondary" className="bg-primary/20">
+                      {mockOrganization.subscription.plan}
+                    </Badge>
+                  </div>
                 </div>
               </div>
+              <Button variant="outline" size="sm" onClick={() => setShowSettings(true)}>
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </Button>
             </div>
-            <Button variant="outline" size="sm">
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-4 gap-4">
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Branches</p>
-              <p className="text-2xl font-semibold">{mockBranches.length}</p>
+          </CardHeader>
+          <CardContent>
+            <div className="p-4 bg-background/50 rounded-lg">
+              <div className="flex items-center gap-2 text-sm">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <span>
+                  {mockOrganization.headquarters.address}, {mockOrganization.headquarters.city}, {mockOrganization.headquarters.country}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-sm mt-2">
+                <span className="text-muted-foreground">Contact:</span>
+                <span>{mockOrganization.headquarters.email}</span>
+                <span>•</span>
+                <span>{mockOrganization.headquarters.phone}</span>
+              </div>
             </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Total Members</p>
-              <p className="text-2xl font-semibold">
-                {mockBranches.reduce((sum, b) => sum + b.metadata.memberCount, 0)}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Services</p>
-              <p className="text-2xl font-semibold">{mockBranchServices.length}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Founded</p>
-              <p className="text-2xl font-semibold">
-                {new Date(mockOrganization.foundedDate).getFullYear()}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-4 p-4 bg-background/50 rounded-lg">
-            <div className="flex items-center gap-2 text-sm">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              <span>
-                {mockOrganization.headquarters.address}, {mockOrganization.headquarters.city}, {mockOrganization.headquarters.country}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-sm mt-2">
-              <span className="text-muted-foreground">Contact:</span>
-              <span>{mockOrganization.headquarters.email}</span>
-              <span>•</span>
-              <span>{mockOrganization.headquarters.phone}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </PageHeader>
 
       {/* Tabs for Branches and Services */}
       <Tabs defaultValue="branches">
         <TabsList>
           <TabsTrigger value="branches" className="gap-2">
             <Church className="h-4 w-4" />
-            Branches ({mockBranches.length})
+            Branches ({mockCampuses.length})
           </TabsTrigger>
           <TabsTrigger value="services" className="gap-2">
             <Calendar className="h-4 w-4" />
-            Services ({mockBranchServices.length})
+            Services ({mockCampusServices.length})
           </TabsTrigger>
           <TabsTrigger value="analytics" className="gap-2">
             <TrendingUp className="h-4 w-4" />
@@ -147,18 +166,18 @@ export function OrganizationManagement() {
                 className="pl-10"
               />
             </div>
-            <Button>
+            <Button onClick={() => setShowSetup(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Add Branch
+              New Campus
             </Button>
           </div>
 
           <div className="grid gap-4">
-            {filteredBranches.map((branch) => {
-              const branchServices = mockBranchServices.filter(s => s.branchId === branch.id);
+            {filteredCampuses.map((campus) => {
+              const campusServices = mockCampusServices.filter(s => s.campusId === campus.id);
               
               return (
-                <Card key={branch.id}>
+                <Card key={campus.id}>
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3">
@@ -167,20 +186,17 @@ export function OrganizationManagement() {
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="font-semibold">{branch.name}</h4>
-                            {branch.isHeadquarters && (
+                            <h4 className="font-semibold">{campus.name}</h4>
+                            {campus.isHeadquarters && (
                               <Badge variant="default">Headquarters</Badge>
                             )}
-                            <Badge variant="outline" className="text-xs">
-                              {branch.code}
-                            </Badge>
                           </div>
                           <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                             <MapPin className="h-3 w-3" />
-                            <span>{branch.location.city}, {branch.location.country}</span>
+                            <span>{campus.location.city}, {campus.location.country}</span>
                           </div>
                           <p className="text-sm text-muted-foreground mt-1">
-                            {branch.location.address}
+                            {campus.location.address}
                           </p>
                         </div>
                       </div>
@@ -192,7 +208,7 @@ export function OrganizationManagement() {
                         <Button variant="ghost" size="icon">
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" disabled={branch.isHeadquarters}>
+                        <Button variant="ghost" size="icon" disabled={campus.isHeadquarters}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -202,39 +218,39 @@ export function OrganizationManagement() {
                     <div className="grid grid-cols-4 gap-4 mb-4">
                       <div className="space-y-1">
                         <p className="text-sm text-muted-foreground">Members</p>
-                        <p className="text-lg font-semibold">{branch.metadata.memberCount}</p>
+                        <p className="text-lg font-semibold">{campus.metadata.memberCount}</p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-sm text-muted-foreground">Avg Attendance</p>
-                        <p className="text-lg font-semibold">{branch.metadata.averageAttendance}</p>
+                        <p className="text-lg font-semibold">{campus.metadata.averageAttendance}</p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-sm text-muted-foreground">Capacity</p>
-                        <p className="text-lg font-semibold">{branch.facilities.mainAuditoriumCapacity}</p>
+                        <p className="text-lg font-semibold">{campus.facilities.mainAuditoriumCapacity}</p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-sm text-muted-foreground">Services</p>
-                        <p className="text-lg font-semibold">{branchServices.length}</p>
+                        <p className="text-lg font-semibold">{campusServices.length}</p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 text-sm">
                       <span className="text-muted-foreground">Contact:</span>
-                      <span>{branch.contact.email}</span>
+                      <span>{campus.contact.email}</span>
                       <span>•</span>
-                      <span>{branch.contact.phone}</span>
+                      <span>{campus.contact.phone}</span>
                     </div>
 
                     <div className="flex gap-2 mt-3">
-                      {branch.facilities.hasChildrenChurch && (
+                      {campus.facilities.hasChildrenChurch && (
                         <Badge variant="secondary" className="text-xs">Children's Church</Badge>
                       )}
-                      {branch.facilities.hasMediaEquipment && (
+                      {campus.facilities.hasMediaEquipment && (
                         <Badge variant="secondary" className="text-xs">Media Equipment</Badge>
                       )}
-                      {branch.facilities.parkingSpaces && (
+                      {campus.facilities.parkingSpaces && (
                         <Badge variant="secondary" className="text-xs">
-                          {branch.facilities.parkingSpaces} Parking Spaces
+                          {campus.facilities.parkingSpaces} Parking Spaces
                         </Badge>
                       )}
                     </div>
@@ -258,23 +274,23 @@ export function OrganizationManagement() {
           </div>
 
           <div className="grid gap-4">
-            {mockBranches.map((branch) => {
-              const branchServices = mockBranchServices.filter(s => s.branchId === branch.id);
+            {mockCampuses.map((campus) => {
+              const campusServices = mockCampusServices.filter(s => s.campusId === campus.id);
               
-              if (branchServices.length === 0) return null;
+              if (campusServices.length === 0) return null;
 
               return (
-                <Card key={branch.id}>
+                <Card key={campus.id}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <Church className="h-5 w-5 text-primary" />
-                      <h4 className="font-semibold">{branch.name}</h4>
-                      <Badge variant="outline" className="text-xs">{branchServices.length} services</Badge>
+                      <h4 className="font-semibold">{campus.name}</h4>
+                      <Badge variant="outline" className="text-xs">{campusServices.length} services</Badge>
                     </div>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {branchServices.map((service) => (
+                      {campusServices.map((service) => (
                         <div
                           key={service.id}
                           className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition"
@@ -331,17 +347,17 @@ export function OrganizationManagement() {
                 <div className="p-6 bg-accent/50 rounded-lg">
                   <p className="text-sm text-muted-foreground mb-2">Total Capacity</p>
                   <p className="text-3xl font-semibold">
-                    {mockBranches.reduce((sum, b) => sum + b.facilities.mainAuditoriumCapacity, 0)}
+                    {mockCampuses.reduce((sum, b) => sum + b.facilities.mainAuditoriumCapacity, 0)}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Across {mockBranches.length} branches
+                    Across {mockCampuses.length} branches
                   </p>
                 </div>
 
                 <div className="p-6 bg-accent/50 rounded-lg">
                   <p className="text-sm text-muted-foreground mb-2">Average Attendance</p>
                   <p className="text-3xl font-semibold">
-                    {Math.round(mockBranches.reduce((sum, b) => sum + b.metadata.averageAttendance, 0) / mockBranches.length)}
+                    {Math.round(mockCampuses.reduce((sum, b) => sum + b.metadata.averageAttendance, 0) / mockCampuses.length)}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Per branch average
@@ -351,7 +367,7 @@ export function OrganizationManagement() {
                 <div className="p-6 bg-accent/50 rounded-lg">
                   <p className="text-sm text-muted-foreground mb-2">Weekly Services</p>
                   <p className="text-3xl font-semibold">
-                    {mockBranchServices.filter(s => s.recurrence.frequency === 'weekly').length}
+                    {mockCampusServices.filter(s => s.recurrence.frequency === 'weekly').length}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Regular weekly services
@@ -362,17 +378,17 @@ export function OrganizationManagement() {
               <div className="mt-6 p-4 border rounded-lg">
                 <h4 className="font-semibold mb-4">Branch Comparison</h4>
                 <div className="space-y-3">
-                  {mockBranches.map((branch) => {
+                  {mockCampuses.map((campus) => {
                     const utilizationPercent = Math.round(
-                      (branch.metadata.averageAttendance / branch.facilities.mainAuditoriumCapacity) * 100
+                      (campus.metadata.averageAttendance / campus.facilities.mainAuditoriumCapacity) * 100
                     );
                     
                     return (
-                      <div key={branch.id}>
+                      <div key={campus.id}>
                         <div className="flex items-center justify-between text-sm mb-1">
-                          <span>{branch.name}</span>
+                          <span>{campus.name}</span>
                           <span className="text-muted-foreground">
-                            {branch.metadata.averageAttendance} / {branch.facilities.mainAuditoriumCapacity} ({utilizationPercent}%)
+                            {campus.metadata.averageAttendance} / {campus.facilities.mainAuditoriumCapacity} ({utilizationPercent}%)
                           </span>
                         </div>
                         <div className="h-2 bg-accent rounded-full overflow-hidden">

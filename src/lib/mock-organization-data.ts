@@ -1,8 +1,8 @@
 /**
- * Mock Organization, Branch, and Service Data
+ * Mock Organization, Campus, and Service Data
  */
 
-import { Organization, Branch, BranchService } from '../types/organization';
+import { Organization, Campus, CampusService } from '../types/organization';
 
 export const mockOrganization: Organization = {
   id: 'org_001',
@@ -40,6 +40,7 @@ export const mockOrganization: Organization = {
     logoUrl: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=200',
     primaryColor: '#1CE479',
     websiteUrl: 'https://victorychapel.org',
+    campusDisplayFormat: 'acronym-space-name',
   },
   
   subscription: {
@@ -55,13 +56,14 @@ export const mockOrganization: Organization = {
   createdBy: 'user_admin_001',
 };
 
-export const mockBranches: Branch[] = [
+export const mockCampuses: Campus[] = [
   {
-    id: 'branch_001',
+    id: 'campus_001',
     organizationId: 'org_001',
     
     name: 'Victory Chapel Lagos (HQ)',
     code: 'VCL',
+    shortName: 'Lagos',
     slug: 'lagos-hq',
     
     type: 'headquarters',
@@ -111,14 +113,15 @@ export const mockBranches: Branch[] = [
     updatedAt: '2024-10-25T10:30:00Z',
   },
   {
-    id: 'branch_002',
+    id: 'campus_002',
     organizationId: 'org_001',
     
     name: 'Victory Chapel Abuja',
     code: 'VCA',
+    shortName: 'Abuja',
     slug: 'abuja',
     
-    type: 'branch',
+    type: 'campus',
     isHeadquarters: false,
     
     location: {
@@ -164,14 +167,15 @@ export const mockBranches: Branch[] = [
     updatedAt: '2024-10-25T10:30:00Z',
   },
   {
-    id: 'branch_003',
+    id: 'campus_003',
     organizationId: 'org_001',
     
     name: 'Victory Chapel Accra',
     code: 'VCG',
+    shortName: 'Accra',
     slug: 'accra-ghana',
     
-    type: 'branch',
+    type: 'campus',
     isHeadquarters: false,
     
     location: {
@@ -218,11 +222,11 @@ export const mockBranches: Branch[] = [
   },
 ];
 
-export const mockBranchServices: BranchService[] = [
+export const mockCampusServices: CampusService[] = [
   // Lagos HQ Services
   {
     id: 'service_001',
-    branchId: 'branch_001',
+    campusId: 'campus_001',
     organizationId: 'org_001',
     
     name: 'Sunday 1st Service',
@@ -257,7 +261,7 @@ export const mockBranchServices: BranchService[] = [
   },
   {
     id: 'service_002',
-    branchId: 'branch_001',
+    campusId: 'campus_001',
     organizationId: 'org_001',
     
     name: 'Sunday 2nd Service',
@@ -292,7 +296,7 @@ export const mockBranchServices: BranchService[] = [
   },
   {
     id: 'service_003',
-    branchId: 'branch_001',
+    campusId: 'campus_001',
     organizationId: 'org_001',
     
     name: 'Midweek Service',
@@ -328,7 +332,7 @@ export const mockBranchServices: BranchService[] = [
   },
   {
     id: 'service_004',
-    branchId: 'branch_001',
+    campusId: 'campus_001',
     organizationId: 'org_001',
     
     name: 'Youth Service',
@@ -362,10 +366,10 @@ export const mockBranchServices: BranchService[] = [
     updatedAt: '2024-10-25T10:30:00Z',
   },
   
-  // Abuja Branch Services
+  // Abuja Campus Services
   {
     id: 'service_005',
-    branchId: 'branch_002',
+    campusId: 'campus_002',
     organizationId: 'org_001',
     
     name: 'Sunday Service',
@@ -400,7 +404,7 @@ export const mockBranchServices: BranchService[] = [
   },
   {
     id: 'service_006',
-    branchId: 'branch_002',
+    campusId: 'campus_002',
     organizationId: 'org_001',
     
     name: 'Midweek Service',
@@ -435,10 +439,10 @@ export const mockBranchServices: BranchService[] = [
     updatedAt: '2024-10-25T10:30:00Z',
   },
   
-  // Accra Branch Services
+  // Accra Campus Services
   {
     id: 'service_007',
-    branchId: 'branch_003',
+    campusId: 'campus_003',
     organizationId: 'org_001',
     
     name: 'Sunday Service',
@@ -473,7 +477,7 @@ export const mockBranchServices: BranchService[] = [
   },
   {
     id: 'service_008',
-    branchId: 'branch_003',
+    campusId: 'campus_003',
     organizationId: 'org_001',
     
     name: 'Prayer Meeting',

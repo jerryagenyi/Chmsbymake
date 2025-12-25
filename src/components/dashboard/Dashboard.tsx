@@ -120,7 +120,7 @@ export function Dashboard() {
           <div className="flex items-center gap-3">
             <LayoutDashboard className="h-5 w-5 text-primary" />
             <div>
-              <h2 className="text-lg">Dashboard Overview</h2>
+              <h2 className="text-2xl font-light">Dashboard Overview</h2>
               <p className="text-sm text-muted-foreground">
                 {cardOrder.length} cards • {config.density} density • {config.cardsPerRow} per row
               </p>

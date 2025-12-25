@@ -12,13 +12,24 @@ import {
 
 export type ServiceType =
   | 'sunday_morning'
+  | 'sunday_morning_1st'
+  | 'sunday_morning_2nd'
+  | 'sunday_morning_3rd'
+  | 'sunday_morning_4th'
+  | 'sunday_morning_5th'
   | 'sunday_evening'
+  | 'sunday_evening_1st'
+  | 'sunday_evening_2nd'
+  | 'sunday_evening_3rd'
+  | 'sunday_evening_4th'
+  | 'sunday_evening_5th'
   | 'midweek'
   | 'prayer_meeting'
   | 'bible_study'
   | 'youth_service'
   | 'children_service'
-  | 'special_event';
+  | 'special_event'
+  | 'custom';
 
 export type ServiceStatus =
   | 'scheduled'
@@ -57,6 +68,7 @@ export interface Service {
   branchId: string;
   name: string;
   serviceType: ServiceType;
+  customTypeName?: string; // Used when serviceType is 'custom'
   scheduledDate: string; // ISO date string
   startTime: string; // HH:mm format (e.g., "09:00")
   endTime: string; // HH:mm format (e.g., "11:00")
@@ -115,38 +127,71 @@ export interface ServiceAttendanceStats {
 
 // Service Type Labels (British English)
 export const SERVICE_TYPE_LABELS: Record<ServiceType, string> = {
-  sunday_morning: 'Sunday Morning Service',
-  sunday_evening: 'Sunday Evening Service',
+  sunday_morning: 'Sunday Morning',
+  sunday_morning_1st: 'Sunday Morning - 1st Service',
+  sunday_morning_2nd: 'Sunday Morning - 2nd Service',
+  sunday_morning_3rd: 'Sunday Morning - 3rd Service',
+  sunday_morning_4th: 'Sunday Morning - 4th Service',
+  sunday_morning_5th: 'Sunday Morning - 5th Service',
+  sunday_evening: 'Sunday Evening',
+  sunday_evening_1st: 'Sunday Evening - 1st Service',
+  sunday_evening_2nd: 'Sunday Evening - 2nd Service',
+  sunday_evening_3rd: 'Sunday Evening - 3rd Service',
+  sunday_evening_4th: 'Sunday Evening - 4th Service',
+  sunday_evening_5th: 'Sunday Evening - 5th Service',
   midweek: 'Midweek Service',
   special_event: 'Special Event',
   prayer_meeting: 'Prayer Meeting',
   bible_study: 'Bible Study',
   youth_service: 'Youth Service',
   children_service: "Children's Service",
+  custom: 'Custom Service',
 };
 
 // Service Type Icons (Lucide React icon names)
 export const SERVICE_TYPE_ICONS: Record<ServiceType, LucideIcon> = {
   sunday_morning: Sun,
+  sunday_morning_1st: Sun,
+  sunday_morning_2nd: Sun,
+  sunday_morning_3rd: Sun,
+  sunday_morning_4th: Sun,
+  sunday_morning_5th: Sun,
   sunday_evening: Moon,
+  sunday_evening_1st: Moon,
+  sunday_evening_2nd: Moon,
+  sunday_evening_3rd: Moon,
+  sunday_evening_4th: Moon,
+  sunday_evening_5th: Moon,
   midweek: Calendar,
   special_event: Sparkles,
   prayer_meeting: Heart,
   bible_study: BookOpen,
   youth_service: Users,
   children_service: Baby,
+  custom: Calendar,
 };
 
 // Service Type Colors (OKLCH-based theme colors)
 export const SERVICE_TYPE_COLORS: Record<ServiceType, string> = {
   sunday_morning: 'text-[#1CE479]', // Primary green
+  sunday_morning_1st: 'text-[#1CE479]', // Primary green
+  sunday_morning_2nd: 'text-[#1CE479]', // Primary green
+  sunday_morning_3rd: 'text-[#1CE479]', // Primary green
+  sunday_morning_4th: 'text-[#1CE479]', // Primary green
+  sunday_morning_5th: 'text-[#1CE479]', // Primary green
   sunday_evening: 'text-blue-400',
+  sunday_evening_1st: 'text-blue-400',
+  sunday_evening_2nd: 'text-blue-400',
+  sunday_evening_3rd: 'text-blue-400',
+  sunday_evening_4th: 'text-blue-400',
+  sunday_evening_5th: 'text-blue-400',
   midweek: 'text-purple-400',
   special_event: 'text-yellow-400',
   prayer_meeting: 'text-pink-400',
   bible_study: 'text-cyan-400',
   youth_service: 'text-orange-400',
   children_service: 'text-green-400',
+  custom: 'text-gray-400',
 };
 
 // Service Status Labels
@@ -326,4 +371,15 @@ export function getServiceTypeStats(
  */
 export function getServiceIcon(serviceType: ServiceType): LucideIcon {
   return SERVICE_TYPE_ICONS[serviceType] || Calendar;
+}
+
+/**
+ * Get the display name for a service type
+ * For custom services, returns the customTypeName if provided
+ */
+export function getServiceTypeDisplayName(service: Service): string {
+  if (service.serviceType === 'custom' && service.customTypeName) {
+    return service.customTypeName;
+  }
+  return SERVICE_TYPE_LABELS[service.serviceType];
 }

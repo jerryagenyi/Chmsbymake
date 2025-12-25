@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Logo } from '../branding';
 
 interface AuthPageProps {
   onSuccess?: () => void;
@@ -19,6 +20,11 @@ export function AuthPage({ onSuccess, defaultTab = 'login' }: AuthPageProps) {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <Logo size="lg" showTagline={true} />
+        </div>
+
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'login' | 'register')}>
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="login">Sign In</TabsTrigger>
@@ -41,9 +47,8 @@ export function AuthPage({ onSuccess, defaultTab = 'login' }: AuthPageProps) {
         </Tabs>
 
         {/* Footer */}
-        <div className="mt-6 text-center text-sm text-muted-foreground">
-          <p>ChurchAfrica ChMS</p>
-          <p className="mt-1">Africa-First Church Management System</p>
+        <div className="mt-8 text-center text-xs text-muted-foreground">
+          <p>&copy; 2025 ChurchAfrica ChMS. All rights reserved.</p>
         </div>
       </div>
     </div>

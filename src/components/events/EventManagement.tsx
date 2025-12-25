@@ -61,6 +61,9 @@ import { Event, EventType, EventStatus, EVENT_TYPE_LABELS } from '../../types/ev
 import { cn } from '../ui/utils';
 import { format, addDays, addWeeks, addMonths } from 'date-fns';
 
+import { generateQRCode } from './QRCodeGenerator';
+import { PageHeader, StatCard } from '../layout/PageHeader';
+
 interface EventManagementProps {
   events: Event[];
   onCreateEvent?: (event: Partial<Event>) => void;
@@ -208,394 +211,69 @@ export function EventManagement({
 
   const [selectedEventForQR, setSelectedEventForQR] = useState<Event | null>(null);
   
+  // Prepare stats for PageHeader
+  const statCards: StatCard[] = [
+    {
+      label: 'Total Events',
+      value: stats.total,
+      icon: Calendar,
+    },
+    {
+      label: 'Upcoming',
+      value: stats.upcoming,
+      icon: Clock,
+      iconColor: 'text-primary',
+      valueColor: 'text-primary',
+    },
+    {
+      label: 'Ongoing',
+      value: stats.ongoing,
+      icon: CheckCircle2,
+      iconColor: 'text-success',
+      valueColor: 'text-success',
+    },
+    {
+      label: 'Completed',
+      value: stats.completed,
+      icon: CheckCircle2,
+      iconColor: 'text-blue-400',
+      valueColor: 'text-blue-400',
+    },
+    {
+      label: 'Cancelled',
+      value: stats.cancelled,
+      icon: X,
+      iconColor: 'text-red-400',
+      valueColor: 'text-red-400',
+    },
+  ];
+  
   return (
     <div className={cn('space-y-6', className)}>
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          {onBack && (
-            <Button variant="outline" size="sm" onClick={onBack}>
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-          )}
-          <div>
-            <h1 className="text-2xl font-bold">Event Management</h1>
-            <p className="text-sm text-muted-foreground">
-              Create and manage church events, services, and activities
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-            <DialogTrigger asChild>
-              <Button className="touch-target">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Event
+      <PageHeader
+        title="Event Management"
+        description="Create and manage church events, services, and activities"
+        stats={statCards}
+        action={
+          <div className="flex items-center gap-2">
+            {onBack && (
+              <Button variant="outline" size="sm" onClick={onBack}>
+                <ChevronLeft className="h-4 w-4 mr-2" />
+                Back
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Create New Event</DialogTitle>
-                <DialogDescription>
-                  Set up a new event for your church community
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="space-y-4 py-4">
-                {/* Basic Information */}
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="title">Event Title *</Label>
-                    <Input
-                      id="title"
-                      value={newEvent.title}
-                      onChange={(e) => setNewEvent(prev => ({ ...prev, title: e.target.value }))}
-                      placeholder="e.g., Sunday Morning Service"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={newEvent.description}
-                      onChange={(e) => setNewEvent(prev => ({ ...prev, description: e.target.value }))}
-                      placeholder="Describe the event purpose and details..."
-                      rows={3}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="type">Event Type *</Label>
-                      <Select
-                        value={newEvent.type}
-                        onValueChange={(value) => setNewEvent(prev => ({ ...prev, type: value as EventType }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {eventTypes.filter(t => t.enabled).map(type => (
-                            <SelectItem key={type.id} value={type.id}>
-                              {type.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="status">Status</Label>
-                      <Select
-                        value={newEvent.status}
-                        onValueChange={(value) => setNewEvent(prev => ({ ...prev, status: value as EventStatus }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="upcoming">Upcoming</SelectItem>
-                          <SelectItem value="ongoing">Ongoing</SelectItem>
-                          <SelectItem value="completed">Completed</SelectItem>
-                          <SelectItem value="cancelled">Cancelled</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Date & Time */}
-                <div className="space-y-4">
-                  <h4 className="font-medium flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
-                    Date & Time
-                  </h4>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="startDate">Start Date & Time *</Label>
-                      <Input
-                        id="startDate"
-                        type="datetime-local"
-                        value={newEvent.startDate}
-                        onChange={(e) => setNewEvent(prev => ({ ...prev, startDate: e.target.value }))}
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="endDate">End Date & Time</Label>
-                      <Input
-                        id="endDate"
-                        type="datetime-local"
-                        value={newEvent.endDate}
-                        onChange={(e) => setNewEvent(prev => ({ ...prev, endDate: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Recurring Events */}
-                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <Repeat className="h-4 w-4 text-muted-foreground" />
-                      <Label htmlFor="recurring" className="cursor-pointer">Recurring Event</Label>
-                    </div>
-                    <input
-                      type="checkbox"
-                      id="recurring"
-                      checked={recurringOptions.enabled}
-                      onChange={(e) => setRecurringOptions(prev => ({ ...prev, enabled: e.target.checked }))}
-                      className="h-4 w-4"
-                    />
-                  </div>
-
-                  {recurringOptions.enabled && (
-                    <div className="grid grid-cols-2 gap-4 pl-4">
-                      <div>
-                        <Label>Frequency</Label>
-                        <Select
-                          value={recurringOptions.frequency}
-                          onValueChange={(value: any) => setRecurringOptions(prev => ({ ...prev, frequency: value }))}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="daily">Daily</SelectItem>
-                            <SelectItem value="weekly">Weekly</SelectItem>
-                            <SelectItem value="monthly">Monthly</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div>
-                        <Label>Number of Occurrences</Label>
-                        <Input
-                          type="number"
-                          min={1}
-                          max={52}
-                          value={recurringOptions.count}
-                          onChange={(e) => setRecurringOptions(prev => ({ ...prev, count: parseInt(e.target.value) || 1 }))}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Location */}
-                <div className="space-y-4">
-                  <h4 className="font-medium flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    Location
-                  </h4>
-
-                  <div>
-                    <Label>Location Type</Label>
-                    <Select
-                      value={newEvent.location?.type || 'physical'}
-                      onValueChange={(value: any) => setNewEvent(prev => ({
-                        ...prev,
-                        location: { ...prev.location, type: value }
-                      }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="physical">
-                          <div className="flex items-center gap-2">
-                            <Building2 className="h-4 w-4" />
-                            Physical Venue
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="online">
-                          <div className="flex items-center gap-2">
-                            <Video className="h-4 w-4" />
-                            Online Only
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="hybrid">
-                          <div className="flex items-center gap-2">
-                            <Globe className="h-4 w-4" />
-                            Hybrid (Physical + Online)
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {(newEvent.location?.type === 'physical' || newEvent.location?.type === 'hybrid') && (
-                    <div>
-                      <Label htmlFor="venue">Venue Address</Label>
-                      <Input
-                        id="venue"
-                        value={newEvent.location?.venue || ''}
-                        onChange={(e) => setNewEvent(prev => ({
-                          ...prev,
-                          location: { ...prev.location, venue: e.target.value }
-                        }))}
-                        placeholder="Church main building, Room 101"
-                      />
-                    </div>
-                  )}
-
-                  {(newEvent.location?.type === 'online' || newEvent.location?.type === 'hybrid') && (
-                    <div>
-                      <Label htmlFor="onlineUrl">Online Meeting Link</Label>
-                      <Input
-                        id="onlineUrl"
-                        value={newEvent.location?.onlineUrl || ''}
-                        onChange={(e) => setNewEvent(prev => ({
-                          ...prev,
-                          location: { ...prev.location, onlineUrl: e.target.value }
-                        }))}
-                        placeholder="https://zoom.us/j/123456789"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Capacity & Registration */}
-                <div className="space-y-4">
-                  <h4 className="font-medium flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Capacity & Registration
-                  </h4>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="capacity">Maximum Capacity</Label>
-                      <Input
-                        id="capacity"
-                        type="number"
-                        min={1}
-                        value={newEvent.capacity || ''}
-                        onChange={(e) => setNewEvent(prev => ({
-                          ...prev,
-                          capacity: e.target.value ? parseInt(e.target.value) : undefined
-                        }))}
-                        placeholder="Leave empty for unlimited"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="deadline">Registration Deadline</Label>
-                      <Input
-                        id="deadline"
-                        type="datetime-local"
-                        value={newEvent.registrationDeadline || ''}
-                        onChange={(e) => setNewEvent(prev => ({
-                          ...prev,
-                          registrationDeadline: e.target.value || undefined
-                        }))}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tags */}
-                <div>
-                  <Label htmlFor="tags">Tags (comma-separated)</Label>
-                  <Input
-                    id="tags"
-                    value={newEvent.tags?.join(', ') || ''}
-                    onChange={(e) => setNewEvent(prev => ({
-                      ...prev,
-                      tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean)
-                    }))}
-                    placeholder="worship, family, youth"
-                  />
-                </div>
-              </div>
-
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
-                  Cancel
+            )}
+            <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+              <DialogTrigger asChild>
+                <Button className="touch-target">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Event
                 </Button>
-                <Button onClick={handleCreateEvent} disabled={loading || !newEvent.title || !newEvent.startDate}>
-                  {loading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4 mr-2" />
-                      Create Event
-                    </>
-                  )}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
-
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Events</p>
-                <p className="text-2xl font-bold">{stats.total}</p>
-              </div>
-              <Calendar className="h-8 w-8 text-muted-foreground" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Upcoming</p>
-                <p className="text-2xl font-bold text-primary">{stats.upcoming}</p>
-              </div>
-              <Clock className="h-8 w-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Ongoing</p>
-                <p className="text-2xl font-bold text-success">{stats.ongoing}</p>
-              </div>
-              <CheckCircle2 className="h-8 w-8 text-success" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Completed</p>
-                <p className="text-2xl font-bold text-blue-400">{stats.completed}</p>
-              </div>
-              <CheckCircle2 className="h-8 w-8 text-blue-400" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Cancelled</p>
-                <p className="text-2xl font-bold text-red-400">{stats.cancelled}</p>
-              </div>
-              <X className="h-8 w-8 text-red-400" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+              </DialogTrigger>
+            </Dialog>
+          </div>
+        }
+      />
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>

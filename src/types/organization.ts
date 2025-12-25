@@ -1,5 +1,5 @@
 /**
- * Organization, Branch, and Service Type Definitions
+ * Organization, Campus, and Service Type Definitions
  * Multi-tenant architecture for ChurchAfrica ChMS
  */
 
@@ -43,6 +43,7 @@ export interface Organization {
     logoUrl?: string;
     primaryColor: string;
     websiteUrl?: string;
+    campusDisplayFormat: 'acronym-comma-name' | 'acronym-space-name' | 'name-only' | 'full-org-comma-name';
   };
   
   // Subscription & Billing
@@ -60,17 +61,18 @@ export interface Organization {
   createdBy: string;
 }
 
-export interface Branch {
+export interface Campus {
   id: string;
   organizationId: string;
   
   // Identity
   name: string;
-  code: string; // Short identifier like "VCL"
+  code: string; // Short identifier like "VCL", "RCCG-TR"
+  shortName: string; // Display name like "Lagos", "Throne Room"
   slug: string;
   
   // Classification
-  type: 'headquarters' | 'branch' | 'cell';
+  type: 'headquarters' | 'campus' | 'cell';
   isHeadquarters: boolean;
   
   // Location Details
@@ -124,9 +126,9 @@ export interface Branch {
   updatedAt: string;
 }
 
-export interface BranchService {
+export interface CampusService {
   id: string;
-  branchId: string;
+  campusId: string;
   organizationId: string;
   
   // Identity
@@ -172,8 +174,8 @@ export interface BranchService {
 export interface UserRole {
   userId: string;
   organizationId?: string;
-  branchId?: string;
-  role: 'super_admin' | 'org_admin' | 'branch_admin' | 'pastor' | 'dept_head' | 'staff' | 'volunteer';
+  campusId?: string;
+  role: 'super_admin' | 'org_admin' | 'campus_admin' | 'pastor' | 'dept_head' | 'staff' | 'volunteer';
   permissions: string[];
   createdAt: string;
 }
@@ -181,7 +183,7 @@ export interface UserRole {
 export interface OrganizationInvite {
   id: string;
   organizationId: string;
-  branchId?: string;
+  campusId?: string;
   email: string;
   role: UserRole['role'];
   invitedBy: string;

@@ -145,6 +145,23 @@ export function ServiceForm({ service, onSave, onCancel }: ServiceFormProps) {
                 </Select>
               </div>
 
+              {/* Custom Service Type Name - Only shown when 'custom' is selected */}
+              {formData.serviceType === 'custom' && (
+                <div className="space-y-2">
+                  <Label htmlFor="customTypeName">Custom Service Name *</Label>
+                  <Input
+                    id="customTypeName"
+                    value={formData.customTypeName || ''}
+                    onChange={(e) => updateField('customTypeName', e.target.value)}
+                    placeholder="e.g., International Service, Recovery Service, Marketplace Service"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Enter a custom name for this unique service type
+                  </p>
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
                 <Textarea

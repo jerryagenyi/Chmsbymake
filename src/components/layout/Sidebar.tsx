@@ -21,7 +21,6 @@ import {
   filterNavigationByRole,
   NavigationItem,
 } from './NavigationItems';
-import { useAuth } from '../../contexts/AuthContext';
 
 interface SidebarProps {
   open: boolean;
@@ -34,21 +33,20 @@ interface SidebarProps {
 export function Sidebar({ open, onClose, isMobile, onNavigate, currentPath: propCurrentPath }: SidebarProps) {
   const [activeSection, setActiveSection] = React.useState<string>('primary');
   const [internalPath, setInternalPath] = React.useState('/');
-  const { profile } = useAuth();
   
   // Use prop path if provided, otherwise use internal state
   const currentPath = propCurrentPath || internalPath;
   
-  // Use profile from auth or fallback to demo user
-  const user = profile || {
+  // Mock user data for design prototype
+  const user = {
     name: 'Pastor John',
-    email: 'admin@oliveBrookchurch.org',
+    email: 'admin@victorychapel.org',
     role: 'pastor',
-    church_name: 'The OliveBrook Church, Abuja',
+    church_name: 'Victory Chapel Ministry',
     church_type: 'Kubwa Campus',
     church_address: 'Kubwa, Abuja, Nigeria',
     church_phone: '+234 800 OLIVE 00',
-    church_email: 'info@olivebrookchurch.org',
+    church_email: 'info@victorychapel.org',
     avatar_url: '',
   };
 
@@ -256,16 +254,17 @@ function NavItem({ item, isActive, onClick }: NavItemProps) {
       onClick={onClick}
       className={`
         w-full flex items-center gap-3 px-3 py-2 rounded-lg
-        text-sm font-medium transition-colors
+        transition-colors
         touch-target no-select
         ${
           isActive
-            ? 'bg-primary/10 text-primary'
+            ? 'bg-primary/10 text-primary font-normal'
             : 'text-foreground hover:bg-accent hover:text-accent-foreground'
         }
       `}
+      style={{ fontWeight: isActive ? '400' : '200' }}
     >
-      <Icon className="h-5 w-5 flex-shrink-0" />
+      <Icon className="h-5 w-5 flex-shrink-0" style={{ strokeWidth: isActive ? 2 : 1.5 }} />
       <span className="flex-1 text-left">{item.label}</span>
       {item.badge && (
         <span className="bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full">
